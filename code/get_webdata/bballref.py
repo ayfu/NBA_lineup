@@ -12,6 +12,7 @@ __description__
 
 '''
 
+import sys
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -113,9 +114,9 @@ def get_pagedata(url):
                    'FTA':[],
                    'FT_percent':[],
                    'points':[]})
-    cols = ['id','lineup','date','team','away_game','opponent','result','minutes','num_poss',
-                  'opp_poss','pace','fg','fga','fg_percent','TP','TPA','TP_percent','eFG','FT','FTA',
-                  'FT_percent','points']
+    cols = ['id','lineup','date','team','away_game','opponent', 'result',
+            'minutes','num_poss', 'opp_poss','pace','fg','fga', 'fg_percent',
+            'TP', 'TPA','TP_percent','eFG','FT','FTA', 'FT_percent','points']
     df.columns = cols
 
     html = requests.get(url)
@@ -130,7 +131,8 @@ def get_pagedata(url):
         temp = unicodedata.normalize('NFKD', dat[i].parent.get_text()).encode('ascii','ignore')
         # Create a list of each element in a row (before it was just one long string)
         temp = temp.split('\n')[1:-1]
-        df = pd.concat([df,pd.DataFrame(np.array([temp]),columns = cols)],axis = 0)
+        df_temp = pd.DataFrame(np.array([temp]),columns = cols)
+        df = pd.concat([df, df_temp],axis = 0)
     return df
 
 def get_nextlink(url):
@@ -236,3 +238,15 @@ def convert_numbers(df):
         else:
             print "Loop not supposed to get here for", x
     return df
+
+'''
+if __name__ == "__main__":
+    team = sys.argv[1]
+    if len(team)>0:
+        df = get_alldata(get_url(team = team))
+        df = convert_numbers(df)
+    else:
+        df = get_alldata(get_url())
+        df = convert_numbers(df)
+
+'''
