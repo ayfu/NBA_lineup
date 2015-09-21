@@ -125,15 +125,18 @@ def get_pagedata(url):
     dat = soup.find('tbody')
     # Create a list of all the elements in the Rank column (labeled 1,2,3,...)
     # Skips over the table headers of Rank, Lineup, Date, ...
-    dat = dat.findAll('td', {'align':{"right"}}, csk = re.compile('[0-9]+'))
-    for i in range(len(dat)):
-        # Convert unicode to ascii format so I can concatenate it into a data frame
-        temp = unicodedata.normalize('NFKD', dat[i].parent.get_text()).encode('ascii','ignore')
-        # Create a list of each element in a row (before it was just one long string)
-        temp = temp.split('\n')[1:-1]
-        df_temp = pd.DataFrame(np.array([temp]),columns = cols)
-        df = pd.concat([df, df_temp],axis = 0)
-    return df
+    try:
+        dat = dat.findAll('td', {'align':{"right"}}, csk = re.compile('[0-9]+'))
+        for i in range(len(dat)):
+            # Convert unicode to ascii format so I can concatenate it into a data frame
+            temp = unicodedata.normalize('NFKD', dat[i].parent.get_text()).encode('ascii','ignore')
+            # Create a list of each element in a row (before it was just one long string)
+            temp = temp.split('\n')[1:-1]
+            df_temp = pd.DataFrame(np.array([temp]),columns = cols)
+            df = pd.concat([df, df_temp],axis = 0)
+        return df
+    except AttributeError:
+        return None
 
 def get_nextlink(url):
     '''
@@ -197,7 +200,11 @@ def get_alldata(url):
         i += 1
         name = 'page' + str(i)
         url = get_nextlink(url)
-        df_dict[name] = get_pagedata(url)
+        df = get_pagedata(url)
+        if df is None:
+            break
+        else:
+            df_dict[name] = df
     df = pd.concat(df_dict.values(), axis = 0)
     return df
 

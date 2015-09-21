@@ -21,6 +21,16 @@ import re
 from nba_lineups import *
 from bballref import *
 
+# variables for stats.nba.com
+season = '2014-15'
+playoff = 'Regular+Season'
+
+# variables for basketball-reference.com
+all_teams = ['PHI','MIL','CHI','CLE','BOS','LAC','MEM','ATL','MIA','CHA',
+             'UTA','SAC','NYK','LAL','ORL','DAL','NJN','DEN','IND','NOH',
+             'DET','TOR','HOU','SAS','PHO','OKC','MIN','POR','GSW','WAS']
+year = '2015'
+
 class dbConnect():
     '''
     Class to help with context management for 'with' statements.
@@ -75,28 +85,53 @@ def all_tables(db):
             print temp.cur.fetchall()
 
 def main():
-
-    season = '2014-15'
-    playoff = 'Regular+Season'
+    # variables from the top of the program
+    global season, playoff, all_teams, year
 
     alldb = glob.glob(os.path.join('..', 'sql', '*.db'))
     temp_db = alldb[:]
     for x in range(len(temp_db)):
         alldb[x] = alldb[x].split('\\')[-1]
 
-    if 'nba_stats.db' not in alldb:
+    if 'nba_stats.db' in alldb:
+        raise ValueError('Database with the same tables already exists.' +\
+                         ' This program will not work.')
+    else:
         print 'Creating new database: nba_stats.db'
+
+    print 'All databases available:'
+    all_db()
+
     temp = dbConnect("../sql/nba_stats.db")
     with temp:
-        # methods from nba_lineups and bballref
+        # methods from nba_lineups
         for team in teams:
             df = mergedf(team = teams[team], season = season,
                          playoff = playoff)
             tablename = ['nba', team, season]
             tablename = ('_').join(tablename)
             df.to_sql(tablename, temp.con, flavor = 'sqlite')
-            print 'Finished building dataframe for', team
             print
+            print 'From stats.nba.com:'
+            print 'Finished building dataframe for %s, %s' % (team, season)
+            print
+
+    temp = dbConnect("../sql/nba_stats.db")
+    with temp:
+        # methods from bballref
+        for team in all_teams:
+            url = get_url(team = team, year = year)
+            df = get_alldata(url)
+            df = convert_numbers(df)
+            tablename = ['bballref', team, year]
+            tablename = ('_').join(tablename)
+            df.to_sql(tablename, temp.con, flavor = 'sqlite')
+            print
+            print 'From basketball-reference.com:'
+            print 'Finished buliding dataframe for %s, %s' % (team, year)
+            print
+    print 'Finished. Closed all connections.'
+
 
 if __name__ == "__main__":
     main()
