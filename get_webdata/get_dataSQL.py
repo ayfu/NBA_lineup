@@ -108,12 +108,13 @@ def main():
         for team in teams:
             df = mergedf(team = teams[team], season = season,
                          playoff = playoff)
-            tablename = ['nba', team, season]
+            tablename = ['nba', team, year]
             tablename = ('_').join(tablename)
             df.to_sql(tablename, temp.con, flavor = 'sqlite')
             print
             print 'From stats.nba.com:'
-            print 'Finished building dataframe for %s, %s' % (team, season)
+            print 'Finished building dataframe for %s, %s' % (team, year)
+            print tablename
             print
 
     temp = dbConnect("../sql/nba_stats.db")
@@ -129,6 +130,7 @@ def main():
             print
             print 'From basketball-reference.com:'
             print 'Finished buliding dataframe for %s, %s' % (team, year)
+            print tablename
             print
     print 'Finished. Closed all connections.'
 
