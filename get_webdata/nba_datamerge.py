@@ -234,5 +234,4 @@ def read_sql(name = 'nba_15season_150920'):
 
 if __name__ == '__main__':
     send_to_csv()
-    df = read_sql()
-    print list(df.columns)
+    print 'done'
