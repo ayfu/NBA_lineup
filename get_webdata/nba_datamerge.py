@@ -94,7 +94,7 @@ def get_tables(db):
         tables = pd.Series([str(tables[x][0]) for x in range(len(tables))])
         return tables
 
-def main_tables():
+def main_tables(somestats = True):
     global db, df_dict_bref, df_dict_nba
 
     tables = get_tables(db)
@@ -117,6 +117,14 @@ def main_tables():
             df_temp = pd.read_sql_query(sql, temp.con)
             df_dict_nba[name] = df_temp
 
+        # Get tables from stats.nba.com for team data
+        somestat = "SELECT * FROM nba_opponent_somestats_2015"
+        allstat = "SELECT * FROM nba_opponent_allstats_2015"
+        some_nba = pd.read_sql_query(somestat, temp.con)
+        all_nba = pd.read_sql_query(allstat, temp.con)
+
+    some_nba = some_nba.drop('index', axis = 1)
+    all_nba = all_nba.drop('index', axis = 1)
     df_bref = pd.concat(df_dict_bref.values(), axis = 0)
     df_nba = pd.concat(df_dict_nba.values(), axis = 0)
 
@@ -128,6 +136,13 @@ def main_tables():
     for col in bref_cols:
         df_bref[col] = df_bref[col]/df_bref['minutes'].astype(float)*48.0
 
+    # Change NJN to BRK (New Jersey Nets to Brooklyn Nets)
+    df_bref['team'] = df_bref['team'].astype(str)
+    df_bref['opponent'] = df_bref['opponent'].astype(str)
+    df_bref.loc[df_bref['team'] == 'BRK', 'team'] = 'BKN'
+    df_bref.loc[df_bref['opponent'] == 'BRK', 'opponent'] = 'BKN'
+    df_bref.loc[df_bref['team'] == 'CHO', 'team'] = 'CHA'
+    df_bref.loc[df_bref['opponent'] == 'CHO', 'opponent'] = 'CHA'
     # Rename columns to note conflict with NBA.com
     # *_pm meaning plusminus
     df_bref = df_bref.rename(columns = {'fg': 'fg_pm',
@@ -175,6 +190,11 @@ def main_tables():
     df_nba = df_nba[nba_bestcols]
     df = pd.merge(df_bref, df_nba, how = 'left', on = 'lineup')
 
+    # Incorporating opponent data
+    if somestats:
+        df = pd.merge(df, some_nba, how = 'left', on = 'opponent')
+    else:
+        df = pd.merge(df, all_nba, how = 'left', on = 'opponent')
 
     # Formatting dataframe
     df['date'] = pd.to_datetime(df.date, format = '%Y-%m-%d %H:%M:%S')
@@ -189,7 +209,7 @@ def main_tables():
 
     return df
 
-def send_to_csv(name = 'nba_15season_150920'):
+def send_to_csv(name = 'nba_15season_some_150928', somestats = True):
     '''
     Function to make csv from full merge of stats.nba.com and bballref
 
@@ -199,8 +219,9 @@ def send_to_csv(name = 'nba_15season_150920'):
     '''
     name = name + '.csv'
     file_name = os.path.join('..', 'csv_data', name)
-    nba_df = main_tables()
+    nba_df = main_tables(somestats = somestats)
     nba_df.to_csv(file_name, index = False)
+    print 'Dataframe shape:', nba_df.shape
     print 'Made csv file:', file_name
 
 def send_to_sql(name = 'nba_15season_150920'):
@@ -212,7 +233,7 @@ def send_to_sql(name = 'nba_15season_150920'):
     makes csv file in 'sql/' folder
     '''
     file_name = os.path.join('sql', name)
-    nba_df = main_tables()
+    nba_df = main_tables(somestats = True)
     temp = dbConnect("../sql/nba_stats.db")
     with temp:
         nba_df.to_sql(name, temp.con, flavor = 'sqlite')
@@ -233,5 +254,5 @@ def read_sql(name = 'nba_15season_150920'):
 
 
 if __name__ == '__main__':
-    send_to_csv()
+    send_to_csv(name = 'nba_15season_all_150928', somestats = False)
     print 'done'

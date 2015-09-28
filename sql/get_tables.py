@@ -43,13 +43,24 @@ class dbConnect():
         self.con.close()
 
 
-def all_tables(db):
+def get_tables(db):
     '''
     Takes in: database file (db)
     Returns: list of tables in database
     '''
     #len(re.findall("[\w]+.db", db)) > 0
     # Build a list of all *.db files
+    temp = dbConnect(db)
+    with temp:
+        temp.cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = temp.cur.fetchall()
+        tables = pd.Series([str(tables[x][0]) for x in range(len(tables))])
+    return tables
+
+def all_tables():
+    '''
+    Returns: list of all tables in every database in sql/ folder
+    '''
     alldb = glob.glob(os.path.join('*.db'))
     temp_db = alldb[:]
     for x in range(len(temp_db)):
@@ -60,13 +71,14 @@ def all_tables(db):
         temp = dbConnect(sql_db)
         with temp:
             temp.cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            table_list = temp.cur.fetchall()
-            return table_list
+            tables = temp.cur.fetchall()
+            tables = pd.Series([str(tables[x][0]) for x in range(len(tables))])
+        return tables
 
 
 def main():
     db = 'nba_stats.db'
-    table_list = all_tables(db)
+    table_list = get_tables(db)
     print
     print 'List of files:'
     print table_list
