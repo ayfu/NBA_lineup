@@ -75,7 +75,7 @@ def encode_force(df, columns, TRANSFORM_CUTOFF):
     return df
 
 
-def forest_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
+def forest_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -108,12 +108,28 @@ def forest_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
     nba_df['opponent'] = ple_team.transform(nba_df.opponent.values)
 
     # After checking bball_ref, these null values should be set to 0
+    """
+    # Commented out for dropping columns in subset_frame()
     nullcols = ['fg_percent', 'TP_percent', 'eFG', 'FT_percent']
     for nullcol in nullcols:
         nba_df.loc[pd.isnull(nba_df[nullcol]), nullcol] = 0
 
     print 'Current shape of dataframe:', nba_df.shape
+    """
 
+    ###########################################################################
+    # SPLIT DATAFRAME BY MONTH (PREDICT ON MONTHS 3 and 4 (march and april)
+    ###########################################################################
+    np.random.seed(1)
+    nba_df = nba_df.reindex(np.random.permutation(nba_df.index))
+    month_id = nba_df['month'].isin([3,4])
+
+    train = nba_df[np.logical_not(month_id)]
+    test = nba_df[month_id]
+
+    train = train.reset_index().drop('index', axis = 1)
+    test = test.reset_index().drop('index', axis = 1)
+    """
     ###########################################################################
     # SPLIT DATAFRAME ON UNIQUE LINEUPS TO PREVENT DATA LEAKAGE
     ###########################################################################
@@ -130,6 +146,10 @@ def forest_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
 
     train = nba_df[trainID_boolmask]
     test = nba_df[testID_boolmask]
+
+    train = train.reset_index().drop('index', axis = 1)
+    test = test.reset_index().drop('index', axis = 1)
+    """
     ###########################################################################
     ###########################################################################
     print
@@ -150,7 +170,7 @@ def forest_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
     return train, test, id_df
 
 
-def lin_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
+def lin_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -184,12 +204,13 @@ def lin_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
     nba_df['opponent'] = ple_team.transform(nba_df.opponent.values)
 
     # After checking bball_ref, these null values should be set to 0
+    """
     nullcols = ['fg_percent', 'TP_percent', 'eFG', 'FT_percent']
     for nullcol in nullcols:
         nba_df.loc[pd.isnull(nba_df[nullcol]), nullcol] = 0
 
     print 'Current shape of dataframe:', nba_df.shape
-
+    """
     ##########################ONE HOT ENCODING#################################
 
     points = nba_df['points'].copy()
@@ -209,21 +230,17 @@ def lin_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
 
     nba_df['points'] = points
     ###########################################################################
-    # SPLIT DATAFRAME ON UNIQUE LINEUPS TO PREVENT DATA LEAKAGE
+    # SPLIT DATAFRAME BY MONTH (PREDICT ON MONTHS 3 and 4 (march and april)
     ###########################################################################
-    uniq_id = nba_df['lineup'].unique()
-    np.random.seed(0) # make sure this split is repeatable
-    uniq_id = uniq_id[np.random.permutation(len(uniq_id))]
+    np.random.seed(1)
+    nba_df = nba_df.reindex(np.random.permutation(nba_df.index))
+    month_id = nba_df['month'].isin([3,4])
 
-    train_id, test_id = train_test_split(uniq_id, test_size = testsize,
-                                         random_state = 1)
+    train = nba_df[np.logical_not(month_id)]
+    test = nba_df[month_id]
 
-    trainID_boolmask = nba_df['lineup'].isin(train_id)
-    #testID_boolmask = nba_df['lineup'].isin(test_id)
-    testID_boolmask = np.logical_not(trainID_boolmask)
-
-    train = nba_df[trainID_boolmask]
-    test = nba_df[testID_boolmask]
+    train = train.reset_index().drop('index', axis = 1)
+    test = test.reset_index().drop('index', axis = 1)
     ###########################################################################
     ###########################################################################
     print
@@ -235,7 +252,7 @@ def lin_encode(filename = 'nba_15season_150920.csv', min_cutoff = 1,
 
     return train, test, id_df
 
-def subset_frame(filename = 'nba_15season_150920.csv', min_cutoff = 1,
+def subset_frame(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -254,13 +271,17 @@ def subset_frame(filename = 'nba_15season_150920.csv', min_cutoff = 1,
     # Filter out useless rows from imperfect merge
     nba_df = nba_df[pd.notnull(nba_df['MIN'])]
     print 'Subset out NULL/non-matched rows from merging' +\
-          'nba with bref:', nba_df.shape
+          ' nba with bref:', nba_df.shape
     nba_df = nba_df[nba_df['minutes'] > min_cutoff]
     print 'Subset out lineups with fewer minutes' +\
-          'than min_cutoff', nba_df.shape
+          ' than min_cutoff', nba_df.shape
     # Drop useless columns
-    nba_df = nba_df.drop(['result', 'TEAM_ABBREVIATION', 'date'],
-                         axis = 1)
+    nba_df = nba_df.drop(['result', 'TEAM_ABBREVIATION', 'date',
+                          'minutes', 'num_poss', 'opp_poss', 'pace_bref',
+                          'fg_pm', 'fga_pm', 'fg_percent', 'TP_pm',
+                          'TPA_pm', 'TP_percent', 'eFG', 'FT_pm',
+                          'FTA_pm', 'FT_percent'],
+                          axis = 1)
     print 'Current shape of dataframe:', nba_df.shape
     return nba_df
 
