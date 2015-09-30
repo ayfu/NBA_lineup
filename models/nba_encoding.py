@@ -75,7 +75,7 @@ def encode_force(df, columns, TRANSFORM_CUTOFF):
     return df
 
 
-def forest_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
+def forest_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -170,7 +170,7 @@ def forest_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
     return train, test, id_df
 
 
-def lin_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
+def lin_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -252,7 +252,7 @@ def lin_encode(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
 
     return train, test, id_df
 
-def subset_frame(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
+def subset_frame(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
@@ -286,6 +286,6 @@ def subset_frame(filename = 'nba_15season_some_150928.csv', min_cutoff = 1,
     return nba_df
 
 if __name__ == '__main__':
-    train, test, id_df = forest_encode()
+    train, test, id_df = forest_encode(filename = 'nba_15season_kMeans_150929')
     #train, test, id_df = lin_encode()
     print train.shape, test.shape, id_df.shape
