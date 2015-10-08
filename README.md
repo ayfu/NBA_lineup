@@ -21,7 +21,7 @@ The original data set contained around 47000 observations, and I explored 200+ d
 
 The distribution of point differentials per 48 minutes (pdpm) after filtering out unreasonable entries is shown below:
 
-<img src="./figures/pointdiff_150921.PNG" alt="pointdiff" align="center" width="600px"/>
+<img src="./figures/pointdiff_150921.png" alt="pointdiff" align="center" width="600px"/>
 
 The range of point differentials is large. Teams generally average single digit point differentials per game (roughly 48 minutes) over the course of a season. Only 8 teams have ever achieved a double digit point differential per game for a season, and the Golden State Warriors reached that milestone this year with a point differential of 10.1 (2nd place was 6.6 by the Clippers). This graph highlights how the pdpm can vary widely as coaches change lineups frequently.
 
