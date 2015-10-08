@@ -75,8 +75,8 @@ def encode_force(df, columns, TRANSFORM_CUTOFF):
     return df
 
 
-def forest_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
-                  TRANSFORM_CUTOFF = 1, testsize = 0.3):
+def forest_encode(filename = '../csv_data/nba_15season_kMeans_150929.csv',
+                  min_cutoff = 1, TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
 
@@ -170,8 +170,8 @@ def forest_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
     return train, test, id_df
 
 
-def lin_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
-                  TRANSFORM_CUTOFF = 1, testsize = 0.3):
+def lin_encode(filename = '../csv_data/nba_15season_kMeans_150929.csv',
+               min_cutoff = 1, TRANSFORM_CUTOFF = 1, testsize = 0.3):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
     Specific for lin_reg
@@ -252,8 +252,8 @@ def lin_encode(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
 
     return train, test, id_df
 
-def subset_frame(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
-                  TRANSFORM_CUTOFF = 1):
+def subset_frame(filename = '../csv_data/nba_15season_kMeans_150929.csv',
+                 min_cutoff = 1, TRANSFORM_CUTOFF = 1):
     """
     Encode dataframe and subset out useless rows from imperfect merge.
 
@@ -264,24 +264,49 @@ def subset_frame(filename = 'nba_15season_kMeans_150929', min_cutoff = 1,
     Returns: train, test, id_df for decision tree regression.
              id_df allows me to match labelencoded id with actual lineup
     """
-    filename = os.path.join('..', 'csv_data', filename)
+    #filename = os.path.join('..', 'csv_data', filename)
     nba_df = pd.read_csv(filename, header = 0)
     print 'Full dataframe:', nba_df.shape
 
     # Filter out useless rows from imperfect merge
     nba_df = nba_df[pd.notnull(nba_df['MIN'])]
+    #nba_df = nba_df[pd.notnull(nba_df['points'])]
+    #nba_df = nba_df[np.logical_not(nba_df['points'].isin([np.inf, -np.inf]))]
     print 'Subset out NULL/non-matched rows from merging' +\
           ' nba with bref:', nba_df.shape
-    nba_df = nba_df[nba_df['minutes'] > min_cutoff]
+    nba_df = nba_df[nba_df['minutes_pm'] > min_cutoff]
     print 'Subset out lineups with fewer minutes' +\
           ' than min_cutoff', nba_df.shape
     # Drop useless columns
     nba_df = nba_df.drop(['result', 'TEAM_ABBREVIATION', 'date',
-                          'minutes', 'num_poss', 'opp_poss', 'pace_bref',
-                          'fg_pm', 'fga_pm', 'fg_percent', 'TP_pm',
-                          'TPA_pm', 'TP_percent', 'eFG', 'FT_pm',
-                          'FTA_pm', 'FT_percent'],
+                          #'minutes', 'num_poss', 'opp_poss', 'pace_bref',
+                          #'fg_pm', 'fga_pm', 'fg_percent', 'TP_pm',
+                          #'TPA_pm', 'TP_percent', 'eFG', 'FT_pm',
+                          #'FTA_pm', 'FT_percent',
+                          'minutes_pm'],
                           axis = 1)
+
+    # Using regex to find all bref type columns
+    cols = ['minutes', 'num_poss', 'opp_poss', 'pace_bref', 'fg_pm',
+        'fga_pm', 'fg_percent', 'TP_pm', 'TPA_pm', 'TP_percent',
+        'eFG', 'FT_pm', 'FTA_pm', 'FT_percent']
+    cols = '|'.join(cols)
+    cols = nba_df.columns[nba_df.columns.str.contains(cols)]
+    # Filter out poor sample size for a train test split
+    for col in cols:
+        nba_df = nba_df[pd.notnull(nba_df[col])]
+        nba_df = nba_df[np.logical_not(nba_df[col].isin([np.inf, -np.inf]))]
+
+    # Define new feature avg_pm which gives the plus/minus on average before
+    # This feature is also used in building kMeans as well since it's very
+    # predictive
+    nba_df['avg_pm'] = 2*(nba_df['fg_pm']-nba_df['TP_pm']) + nba_df['FT_pm'] +  3*nba_df['TP_pm']
+
+    columns = list(nba_df.columns)
+    columns.remove('points')
+    columns.append('points')
+    nba_df = nba_df[columns]
+
     print 'Current shape of dataframe:', nba_df.shape
     return nba_df
 
