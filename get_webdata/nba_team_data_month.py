@@ -32,6 +32,7 @@ def team_months(team = 'GSW'):
     #team_id = {team_name[x]: all_teams[x] for x in range(len(team_name))}
 
     types = ['Base', 'Advanced', 'Four+Factors', 'Misc', 'Scoring', 'Opponent']
+    stype = types[0] #change this value for other stat types
     seasons = [#'1996-97', '1997-98', '1998-99', '1999-00',
                '2000-01', '2001-02', '2002-03', '2003-04', '2004-05',
                '2005-06', '2006-07', '2007-08', '2008-09', '2009-10',
@@ -55,7 +56,7 @@ def team_months(team = 'GSW'):
            'LastNGames=0',
            'LeagueID=00',
            'Location=',
-           'MeasureType=Base',
+           'MeasureType='+stype,
            'Month=0',
            'OpponentTeamID=0',
            'Outcome=',
