@@ -1,5 +1,4 @@
 # Don't track anything in figures (afu)
-figures/
 .ipynb_checkpoints/
 *.ipynb
 *.ppt
