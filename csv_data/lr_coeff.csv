@@ -1,0 +1,24 @@
+coefficient,feature
+5.035156906,eff. Field Goal %
+3.220754263,3 Point %
+1.228580357,Free Throw %
+0.765988079,Net +/-
+0.591680712,# of opt poss. (clustered)
+0.246717584,# of poss. (clustered)
+0.237737594,Field Goal +/-
+0.078116769,Free Throws Made (clustered)
+0.064359923,3 Point Attempts +/-
+0.040714252,Avg. # of Block Attempts
+0.038060504,Avg. # of Turnovers
+0.037869644,# Personal Fouls (~team)
+0.036578616,# Points (clustered)
+0.035278786,Field Goal Attempts (clustered)
+0.030305464,minutes
+0.023282147,PTS_OFF_TOV
+0.017384961,OPP_PTS_2ND_CHANCE
+0.015694047,OPP_PTS_PAINT
+0.011386492,PTS_2ND_CHANCE
+0.008441004,PTS_FB
+0.008183986,AST
+0.00730679,PTS_PAINT_opt
+,
