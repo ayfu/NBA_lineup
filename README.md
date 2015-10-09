@@ -21,7 +21,7 @@ The original data set contained around 47000 observations, and I explored 200+ d
 
 The distribution of point differentials per 48 minutes (pdpm) after filtering out unreasonable entries is shown below:
 
-<img src="./figures/pointdiff_150921.png" alt="pointdiff" align="center" width="600px"/>
+<img src="./figures/pointdiff_150921.png" alt="pointdiff" align="center" width="750px"/>
 
 The range of point differentials is large. Teams generally average single digit point differentials per game (roughly 48 minutes) over the course of a season. Only 8 teams have ever achieved a double digit point differential per game for a season, and the Golden State Warriors reached that milestone this year with a point differential of 10.1 (2nd place was 6.6 by the Clippers). This graph highlights how the pdpm can vary widely as coaches change lineups frequently.
 
@@ -32,7 +32,7 @@ The large point differentials are from lineups that play very few minutes. For e
 
 If available, coaches generally examine previous encounters with opponents when preparing for a game. With this in mind, a simple method to predict whether a lineup is favored is to average over the result of previous encounters. The results of this method can be shown on a plot of the predicted point differential vs. the actual point differential:
 
-<img src="./figures/baseline_pm_2.jpg" alt="baseline" align="center" width="600px"/>
+<img src="./figures/baseline_pm_2.jpg" alt="baseline" align="center" width="750px"/>
 
 Any data point that lies on the black dotted line is a perfect prediction. A data point that lies within the shaded green region suggests that the prediction agrees with the actual result on whether a particular lineup is favored or not (true positive and true negative). Data points in the grey regions are predictions that incorrectly suggest whether a lineup is favored (false positive and false negative). This method correctly predicts a favored or unfavored matchup correctly 62% of the time with a false positive rate of 0.24 and a true positive rate of 0.37. Averaging based on past encounters can produce favorable results when compared to randomly picking lineups. 
 
@@ -42,13 +42,13 @@ This plot also shows how there is a very limited relationship between the predic
 
 To build my model, I used data scraped from http://www.basketball-reference.com and aggregated it data from http://stats.nba.com on various lineups and statistics averaged over each month for every single team. In all, I started with over 100 different features. Furthermore, I used k-means clustering to group different features and compute various statistical aggregates such as mean and standard deviation. One example is that I clustered team data into 5 distinct groups based on their performance on the season thus far. 
 
-<img src="./figures/kmeans_teamRating_150930_5.png" alt="baseline" align="center" width="600px"/>
+<img src="./figures/kmeans_teamRating_150930_5.png" alt="baseline" align="center" width="750px"/>
 
 In this graph, teams are clustered by their statistics such as their average point differential (PLUS_MINUS_opt), offensive rating (OFF_RATING_opt), and defensive rating (DEF_RATING_opt) in the season so far. The graph shows how teams were segmented into 5 groups. Group 5 has one extremely high performing team, the Warriors, which further suggests that the Warriors were in a class of their own last season. I used these groups to define similar opponents, and I calculated the average and the standard deviation of features such as point differential or field goal percentage over similar opponents for each lineup. In all, I performed k-means clustering on several features to help generate a dataset with over 200 features, and I used a different subset of features for each algorithm.
 
 The final results of my prediction are shown below:
 
-<img src="./figures/prediction_result_151002.jpg" alt="result" align="center" width="600px"/>
+<img src="./figures/prediction_result_151002.jpg" alt="result" align="center" width="750px"/>
 
 There are far fewer red data points, results of the new model, than blue data points in the grey region, indicating that this model correctly predicts whether a lineup is favorable or not at a better rate than averaging over previous encounters. This new model made a correct prediction 87% of the time with a false positive rate of 0.015 and a true positive rate of 0.51.
 
@@ -56,7 +56,7 @@ Lasso regression found that features such as the opposing team, effective Field 
 
 It is also helpful to examine the distributions of the residuals with respect to a perfect point differential prediction:
 
-<img src="./figures/residuals_151002a.png" alt="result" align="center" width="600px"/>
+<img src="./figures/residuals_151002a.png" alt="result" align="center" width="750px"/>
 
 The distribution for the new model is considerably tighter (std: 36 pdpm) than the distribution for averaging over previous encounters (std: 73 pdpm), another indication that the new model outperforms the base model. I obtained adjusted R-squared values for the base model and the new model of -1.4 and 0.18, respectively. A significant portion of the variance in this result comes from the cases where a lineup goes on an unexpected scoring spree. If I focus my analysis on point differentials with magnitudes less than 100 pdpm (94% of the results), the adjusted R-squared values become -0.7 and 0.23 for the base model and the new model, respectively. Although the base model has an accuracy of 62%, it is a poor predictor of point differential with respect to R-squared. In this case, the magnitude of the base model's prediction cannot be trusted.
 
