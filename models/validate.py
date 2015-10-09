@@ -94,34 +94,14 @@ class rfModel():
         self.test = self.test.reset_index().drop('index', axis = 1)
         """
         # TESTING GROUNDS
-        bestcol = ['PLUS_MINUS', 'NET_RATING', 'dayofmonth', 'day', 'MIN', 'GP',
-           'lineup', 'month', 'PIE', 'team', 'PACE', 'away_game',
-           'OPP_PTS_FB', 'OPP_PTS_2ND_CHANCE', 'OPP_PTS_OFF_TOV', 'OPP_AST',
-           'PCT_PTS_2PT_MR', 'OPP_FG3M', 'FT_PCT', 'OPP_DREB', 'STL', 'OPP_FG3A',
-           'OPP_FT_PCT', 'PTS_2ND_CHANCE', 'OPP_PTS_PAINT', 'FGA', 'OPP_FGA',
-           'OREB', 'OPP_STL', 'DREB']
-
+        bestcol = [...put list of columns here for testing features...]
+        bestcol = bestcol + ['points']
         """
-
-        """
-        bestcol = ['fg_pm', 'FT_pm', 'eFG', 'TP_pm', 'TP_percent', 'minutes',
-                   'FTA_pm', 'PLUS_MINUS', 'dayofmonth', 'day', 'fg_percent',
-                   'NET_RATING', 'fga_pm', 'TPA_pm', 'GP', 'FT_pm_3mean', 'PTS',
-                   'away_game', 'TP_pm_3mean', 'opp_poss', 'PIE', 'TP_percent_3mean',
-                   'num_poss', 'month', 'FTM', 'OPP_FGM', 'FT_percent',
-                   'minutes_3mean', 'OPP_AST', 'PCT_PTS_2PT', 'OPP_PTS', 'lineup',
-                   'PTS_OFF_TOV', 'PCT_PTS_2PT_MR', 'MIN', 'team', 'fg_pm_3mean',
-                   'FT_percent_3mean', 'pace_bref', 'FGA_opt', 'OPP_FG3_PCT', 'OPP_FGA',
-                   'FT_PCT', 'OPP_FG3A', 'OFF_RATING', 'FG3_PCT', 'PCT_PTS_PAINT', 'FTA_RATE',
-                   'DEF_RATING', 'OPP_FG3M', 'points']
-
-        bestcol = ['fga_pm', 'TP_pm', 'FT_pm',
-                   #'TPA_pm', 'FTA_pm'
-                  ]
-        """
+        # Use these next two lines if you want to filter out these aggregates
         bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
         bestcol = self.train.columns[bestcol]
-        #bestcol = bestcol + ['points']
+
+        # Subset of features you want to train on
         self.train = self.train[bestcol]
         self.test = self.test[bestcol]
 
@@ -205,30 +185,14 @@ class gbModel():
 
         """
         # TESTING GROUNDS
-        bestcol = ['PLUS_MINUS', 'NET_RATING', 'dayofmonth', 'day', 'MIN', 'GP',
-           'lineup', 'month', 'PIE', 'team', 'PACE', 'away_game',
-           'OPP_PTS_FB', 'OPP_PTS_2ND_CHANCE', 'OPP_PTS_OFF_TOV', 'OPP_AST',
-           'PCT_PTS_2PT_MR', 'OPP_FG3M', 'FT_PCT', 'OPP_DREB', 'STL', 'OPP_FG3A',
-           'OPP_FT_PCT', 'PTS_2ND_CHANCE', 'OPP_PTS_PAINT', 'FGA', 'OPP_FGA',
-           'OREB', 'OPP_STL', 'DREB']
-
+        bestcol = [...put list of columns here for testing features...]
+        bestcol = bestcol + ['points']
         """
-
-        """
-        bestcol = ['fg_pm', 'FT_pm', 'eFG', 'TP_pm', 'TP_percent', 'minutes',
-                   'FTA_pm', 'PLUS_MINUS', 'dayofmonth', 'day', 'fg_percent',
-                   'NET_RATING', 'fga_pm', 'TPA_pm', 'GP', 'FT_pm_3mean', 'PTS',
-                   'away_game', 'TP_pm_3mean', 'opp_poss', 'PIE', 'TP_percent_3mean',
-                   'num_poss', 'month', 'FTM', 'OPP_FGM', 'FT_percent',
-                   'minutes_3mean', 'OPP_AST', 'PCT_PTS_2PT', 'OPP_PTS', 'lineup',
-                   'PTS_OFF_TOV', 'PCT_PTS_2PT_MR', 'MIN', 'team', 'fg_pm_3mean',
-                   'FT_percent_3mean', 'pace_bref', 'FGA_opt', 'OPP_FG3_PCT', 'OPP_FGA',
-                   'FT_PCT', 'OPP_FG3A', 'OFF_RATING', 'FG3_PCT', 'PCT_PTS_PAINT', 'FTA_RATE',
-                   'DEF_RATING', 'OPP_FG3M', 'points']
-        """
-
+        # Use these next two lines if you want to filter out these aggregates
         bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
         bestcol = self.train.columns[bestcol]
+
+        # Subset of features you want to train on
         self.train = self.train[bestcol]
         self.test = self.test[bestcol]
 
@@ -246,7 +210,7 @@ class gbModel():
         error = mean_squared_error(self.y_pred, self.y_test)
         print 'Mean squared error:', error
 
-        # Getting attributes from RandomForestRegressor()
+        # Getting attributes from GradientBoostingRegressor()
         feat = rf.feature_importances_
         self.feat_imp = pd.DataFrame({'feature': self.train.columns[:-1],
                                       'importance': feat})
@@ -305,56 +269,17 @@ class linModel():
 
         """
         # TESTING GROUNDS
-        bestcol = ['PCT_FGA_2PT', 'PCT_FGA_3PT', 'PCT_PTS_2PT_MR', 'PCT_PTS_PAINT', 'PCT_PTS_2PT',
-                   'OPP_OREB_PCT', 'DREB_PCT', 'PCT_PTS_3PT', 'PCT_PTS_FT', 'PCT_AST_FGM', 'EFG_PCT',
-                   'FG_PCT', 'AST_PCT', 'TM_TOV_PCT', 'year', 'OPP_FG_PCT', 'OPP_EFG_PCT', 'TS_PCT',
-                   'PCT_PTS_OFF_TOV', 'PCT_UAST_FGM', 'OREB_PCT', 'FTA_RATE', 'OPP_TOV_PCT',
-                   'PCT_UAST_2PM', 'month', 'DEF_RATING', 'NET_RATING', 'OFF_RATING', 'BLK',
-                   'OPP_BLKA', 'PFD', 'OPP_PF', 'PCT_AST_3PM', 'OPP_BLK', 'BLKA', 'team_26',
-                   'OPP_FG3_PCT', 'PCT_UAST_3PM', 'team_14', 'team_8', 'team_0', 'FG3_PCT',
-                   'PIE', 'away_game', 'team_22', 'team_2', 'team_23', 'team_28', 'team_1',
-                   'team_13', 'team_12', 'REB_PCT', 'PCT_PTS_FB', 'team_18', 'team_20', 'team_3',
-                   'PTS', 'team_29', 'OPP_FT_PCT', 'team_5', 'OPP_FTA_RATE', 'FG3M', 'OPP_REB',
-                   'OPP_DREB', 'team_6', 'OPP_FGM', 'FGM', 'team_11', 'opponent_15', 'team_19',
-                   'team_21', 'team_17', 'team_27']
-
-
-        bestcol = ['fga_pm', 'TP_pm', 'FT_pm',
-                   #'TPA_pm', 'FTA_pm'
-                  ]
-
-        bestcol = ['team_11', 'team_21', 'team_6', 'team_12', 'team_14', 'team_18', 'team_22',
-                   'team_13', 'team_29', 'team_23', 'team_10', 'team_4', 'team_28', 'team_3',
-                   'eFG', 'PCT_PTS_2PT_MR', 'PIE', 'OPP_FG3_PCT', 'AST_RATIO', 'OPP_FGM',
-                   'FT_percent', 'opponent_13', 'AST_TO', 'OREB_opt', 'BLK', 'OPP_AST_opt',
-                   'OPP_PTS_FB_opt', 'NET_RATING_opt', 'OFF_RATING', 'OPP_FTM', 'OPP_REB',
-                   'PTS', 'REB', 'FT_PCT', 'OPP_FG3M', 'OPP_BLK_opt', 'TOV', 'PLUS_MINUS',
-                   'MIN', 'OPP_PTS_OFF_TOV_opt', 'opponent_5', 'OPP_FTA_opt', 'BLKA_opt',
-                   'FGA_opt', 'OPP_PFD', 'OPP_FG3A', 'opponent_27', 'TP_percent', 'OPP_PTS',
-                   'FGA', 'opponent_26', 'OPP_BLK', 'opponent_23', 'opp_poss', 'OPP_PTS_PAINT',
-                   'fga_pm', 'PTS_PAINT', 'OPP_PTS_2ND_CHANCE', 'FTM_opt', 'OPP_PTS_PAINT_opt',
-                   'avg_pm', 'FT_pm', 'W_opt', 'FTA', 'PTS_FB_opt', 'OPP_PF', 'lineup', 'L_opt',
-                   'OPP_STL', 'FTA_pm', 'TPA_pm', 'FG3A', 'TP_pm', 'num_poss',
-                   'day', 'GP', 'dayofmonth', 'OPP_AST', 'OPP_PTS_OFF_TOV', 'STL',
-                   'PTS_OFF_TOV', 'PTS_FB', 'OPP_PTS_2ND_CHANCE_opt', 'PTS_2ND_CHANCE',
-                   'OPP_FTA', 'pace_bref', 'month', 'away_game', 'OPP_FGA_opt',
-                   'OPP_PTS_FB', 'PTS_opt', 'AST_opt', 'PF', 'OPP_REB_opt', 'BLK_opt',
-                   'PTS_OFF_TOV_opt', 'minutes', 'PCT_UAST_2PM', 'OPP_TOV', 'FG3M',
-                   'OPP_FGA', 'PTS_PAINT_opt', 'OREB', 'FTM', 'OPP_BLKA_opt', 'DREB',
-                   'FTA_opt', 'PACE', 'OPP_DREB', 'DREB_opt', 'OPP_OREB', 'OPP_BLKA',
-                   'FG3M_opt', 'FGM', 'NET_RATING', 'opponent_24', 'AST', 'DEF_RATING',
-                   'PCT_UAST_3PM', 'PCT_PTS_FB', 'REB_PCT', 'OPP_FT_PCT', 'OPP_FTA_RATE',
-                   'DREB_PCT', 'team_5', 'team_27', 'team_1', 'team_24', 'team_20', 'team_25',
-                   'team_7', 'team_19', 'team_8', 'team_2', 'team_0', 'team_15', 'team_17',
-                   'team_9', 'team_16']
-
-
+        bestcol = [...put list of columns here for testing features...]
         bestcol = bestcol + ['points']
         """
-        bestcol = np.logical_not(self.train.columns.str.contains('_10mean|_std|_max|_min|_5std|_5max|_5min|Unnamed'))
+        # Use these next two lines if you want to filter out these aggregates
+        bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
         bestcol = self.train.columns[bestcol]
+
+        # Subset of features you want to train on
         self.train = self.train[bestcol]
         self.test = self.test[bestcol]
+
         print self.train.shape, self.test.shape
         ###
         print 'train shape and test shape', self.train.shape, self.test.shape
@@ -378,7 +303,7 @@ class linModel():
         error = mean_squared_error(self.y_pred, self.y_test)
         print 'Mean squared error:', error
 
-        # Getting attributes from RandomForestRegressor()
+        # Getting attributes from LinearRegression()
         coef = self.lr.coef_
         self.coef_imp = pd.DataFrame({'feature': self.train.columns[:-1],
                                       'coefficient': coef})
