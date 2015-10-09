@@ -1,4 +1,4 @@
-# NBA basketball Project
+# NBA Basketball Project
 
 While watching the 2015 NBA Finals, I noticed that Steve Kerr, the coach of the Golden State Warriors, employed a strategy of changing the starting lineup, the combination of 5 players playing, used in a game in response to the unique challenge of playing the Cleveland Cavaliers. His potentially controversial decision to play Andre Iguodala, a 6' 6" player, and bench Andrew Bogut, a 7' 0" player that had made strong contributions to the team's success thus far, was one of the keys to winning the championship. 
 
@@ -17,7 +17,7 @@ The original data set contained around 47000 observations, and I explored 200+ d
 
 
 
-# Evaluation metric 
+# Evaluation Metric 
 
 The distribution of point differentials per 48 minutes (pdpm) after filtering out unreasonable entries is shown below:
 
@@ -28,7 +28,7 @@ The range of point differentials is large. Teams generally average single digit 
 The large point differentials are from lineups that play very few minutes. For example, I have seen a coach can make a substitution for a player and in the course of a minute, the team can make a 3 pointer, force a turnover, and make another 3 pointer before a coach makes another substitution. 6 points in 1 minute gives a point differential of 288 points per 48 minutes.
 
 
-# Baseline
+# Base Model for Comparison
 
 If available, coaches generally examine previous encounters with opponents when preparing for a game. With this in mind, a simple method to predict whether a lineup is favored is to average over the result of previous encounters. The results of this method can be shown on a plot of the predicted point differential vs. the actual point differential:
 
@@ -36,7 +36,7 @@ If available, coaches generally examine previous encounters with opponents when 
 
 Any data point that lies on the black dotted line is a perfect prediction. A data point that lies within the shaded green region suggests that the prediction agrees with the actual result on whether a particular lineup is favored or not (true positive and true negative). Data points in the grey regions are predictions that incorrectly suggest whether a lineup is favored (false positive and false negative). This method correctly predicts a favored or unfavored matchup correctly 62% of the time with a false positive rate of 0.24 and a true positive rate of 0.37. Averaging based on past encounters can produce favorable results when compared to randomly picking lineups. 
 
-This plot also shows how there is a very limited relationship between the prediction and the actual results. I obtained a r-squared value of -1.4, which implies that consistently predicting a constant value (the average predicted pdpm or 0) produces a better fit even though there would be less insight to make a coaching decision.
+This plot also shows how there is a very limited relationship between the prediction and the actual results. I obtained a R-squared value of -1.4, which implies that consistently predicting a constant value (the average predicted pdpm or 0) produces a better fit even though there would be less insight to make a coaching decision.
 
 # Model Results
 
@@ -62,7 +62,7 @@ The distribution for the new model is considerably tighter (std: 36 pdpm) than t
 
 The magnitude of the point differential is an important consideration because it indicates by how much a lineup is favored. With this in mind, the new model can potentially identify highly favored lineups while the base model cannot.
 
-# Examining the results of the model for making lineup decisions
+# Examining the Results to Make Actionable Lineup Decisions
 
 Since I'm a fan of the Golden State Warriors, I focused my attention on Warriors lineups. One example where the model could help was when the Warriors played the San Antonio Spurs on April 5th, 2015 in San Antonio. In this game, the Spurs started the game explosively and jumped to a double digit point differential by the half-way point of the first quarter. In their previous encounters, the starting lineup of Harrison Barnes, Andrew Bogut, Steph Curry, Draymond Green, and Klay Thompson for the Warriors had an average point differential of 20.5 pdpm against the Spurs. However, this lineup of experienced a -48.8 pdpm by the end of the game and the Warriors never recovered from the early deficit.  My new model predicted that the lineup for the Warriors was going to lose by -34.1 pdpm, which suggests that Steve Kerr should consider a different lineup for this team. 
 
