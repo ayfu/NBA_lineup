@@ -52,7 +52,7 @@ The final results of my prediction are shown below:
 
 There are far fewer red data points, results of the new model, than blue data points in the grey region, indicating that this model correctly predicts whether a lineup is favorable or not at a better rate than averaging over previous encounters. This new model made a correct prediction 87% of the time with a false positive rate of 0.015 and a true positive rate of 0.51.
 
-Lasso regression found that features such as the opposing team, effective Field goal percentage, 3 point percentage, free throw percentage, and point differential averaged over the first few months of the season are strong predictors. The decision tree-based models found that the point differential averaged across similar opponents, average number of minutes played across similar opponents, games played together, and average field goal differentials were heavily used predictors in building the model.
+Lasso regression found that features such as the opposing team, effective field goal percentage, 3 point percentage, free throw percentage, and point differential averaged over the first few months of the season are strong predictors. The decision tree-based models found that the point differential averaged across similar opponents, average number of minutes played across similar opponents, games played together, and average field goal differentials were heavily used predictors in building the model.
 
 It is also helpful to examine the distributions of the residuals with respect to a perfect point differential prediction:
 
