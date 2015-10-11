@@ -117,8 +117,8 @@ class rfModel():
         self.y_pred = rf.predict(X_test)
 
         print 'OOB score:', rf.oob_score_
-        error = mean_squared_error(self.y_pred, self.y_test)
-        print 'Mean squared error:', error
+        error = mean_squared_error(self.y_pred, self.y_test)**0.5
+        print 'RMSE:', error
 
         # Getting attributes from RandomForestRegressor()
         feat = rf.feature_importances_
@@ -207,8 +207,8 @@ class gbModel():
         rf.fit(X, y)
         self.y_pred = rf.predict(X_test)
 
-        error = mean_squared_error(self.y_pred, self.y_test)
-        print 'Mean squared error:', error
+        error = mean_squared_error(self.y_pred, self.y_test)**0.5
+        print 'RMSE:', error
 
         # Getting attributes from GradientBoostingRegressor()
         feat = rf.feature_importances_
@@ -300,8 +300,8 @@ class linModel():
         self.lr.fit(X, y)
         self.y_pred = self.lr.predict(X_test)
 
-        error = mean_squared_error(self.y_pred, self.y_test)
-        print 'Mean squared error:', error
+        error = mean_squared_error(self.y_pred, self.y_test)**0.5
+        print 'RMSE:', error
 
         # Getting attributes from LinearRegression()
         coef = self.lr.coef_
