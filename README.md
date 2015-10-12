@@ -34,7 +34,7 @@ If available, coaches likely examine previous encounters with an opponent when p
 
 <img src="./figures/baseline_pm_2.jpg" alt="baseline" align="center" width="750px"/>
 
-Any data point that lies on the black dotted line is a perfect prediction. A data point that is within the shaded green region suggests that the prediction agrees with the actual result on whether a particular lineup is favored or not (true positive and true negative). Data points in the grey regions are predictions that incorrectly suggest whether a lineup is favored (false positive and false negative). This method correctly predicts a favored or unfavored matchup correctly 62% of the time with a false positive rate of 0.24 and a true positive rate of 0.37. Averaging based on past encounters can produce favorable results when compared to randomly picking lineups. 
+Any data point that lies on the black dotted line is a perfect prediction. A data point that is within the shaded green region suggests that the prediction agrees with the actual result on whether a particular lineup is favored or not (true positive and true negative). Data points in the grey regions are predictions that incorrectly suggest whether a lineup is favored (false positive and false negative). This method correctly predicts a favored or unfavored matchup correctly 62% of the time with a [false positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity) of 0.55 and a [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity) of 0.65. Averaging based on past encounters can produce favorable results when compared to randomly picking lineups. 
 
 This plot also shows how there is no discernable relationship between the prediction and the actual results. I obtained a R-squared value of -1.4, which implies that consistently predicting a constant value (the average predicted pdpm or 0) produces a better fit even though there would be less insight to make a coaching decision.
 
@@ -50,7 +50,7 @@ The final results of my prediction are shown below:
 
 <img src="./figures/prediction_result_151002.jpg" alt="result" align="center" width="750px"/>
 
-There are far fewer red data points, results of the new model, than blue data points in the grey region, indicating that this model correctly predicts whether a lineup is favorable or not at a better rate than averaging over previous encounters. This new model made a correct prediction 87% of the time with a false positive rate of 0.015 and a true positive rate of 0.51.
+There are far fewer red data points, results of the new model, than blue data points in the grey region, indicating that this model correctly predicts whether a lineup is favorable or not at a better rate than averaging over previous encounters. This new model made a correct prediction 87% of the time with a [false positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity) of 0.033 and a [true positive rate](https://en.wikipedia.org/wiki/Sensitivity_and_specificity) of 0.86.
 
 Lasso regression found that features such as the opposing team, effective field goal percentage, 3 point percentage, free throw percentage, and point differential averaged over the first few months of the season are strong predictors. The decision tree-based models found that the point differential averaged across similar opponents, average number of minutes played across similar opponents, games played together, and average field goal differentials were heavily used predictors in building the model.
 
