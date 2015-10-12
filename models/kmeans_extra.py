@@ -14,12 +14,14 @@ __description__
     months before March and April
 
 '''
-import sys, os
+import sys
+import os
 from collections import defaultdict
-import pandas as pd
-import numpy as np
 import datetime as dt
 import sqlite3
+
+import pandas as pd
+import numpy as np
 from sklearn.cluster import KMeans
 
 params_km = {'n_clusters': 5,
@@ -110,7 +112,8 @@ def cluster_stats(n = 3):
     df_min = df.copy()
 
     for lineup in df['lineup'].unique():
-        t_df = df[(df['lineup'] == lineup) & np.logical_not(df['month'].isin([3,4]))]
+        t_df = df[(df['lineup'] == lineup) &
+                  np.logical_not(df['month'].isin([3,4]))]
         for x in t_df['cluster'].unique():
             temp_df = pd.DataFrame(t_df.loc[t_df['cluster'] == x,
                                    brefcol[:-1]].apply(np.mean, axis = 0))
@@ -183,7 +186,8 @@ def cluster_stats(n = 3):
     for lineup in df['lineup'].unique():
         d = df.loc[df['lineup'] == lineup, 'opponent'].value_counts()
         subset = list(d[d>1].index)
-        sublist += list(pdf[(pdf['lineup'] == lineup) & (pdf['opponent'].isin(subset))].index)
+        sublist += list(pdf[(pdf['lineup'] == lineup) &
+                            (pdf['opponent'].isin(subset))].index)
     df_ = df_.loc[sublist,:]
     """
 

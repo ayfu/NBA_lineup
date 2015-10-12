@@ -11,11 +11,13 @@ __description__
 
 '''
 
-import sys, os
+import sys
+import os
 from collections import defaultdict
+import datetime as dt
+
 import pandas as pd
 import numpy as np
-import datetime as dt
 from sklearn.cluster import KMeans
 
 nb_cols = ['PLUS_MINUS_opt', 'OFF_RATING_opt', 'DEF_RATING_opt', 'PACE_opt']

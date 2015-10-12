@@ -14,12 +14,15 @@ __description__
     The dataframe has not been encoded yet (encoding.py)
 '''
 
-import pandas as pd
-import numpy as np
+
 import sqlite3
-import sys, os
+import sys
+import os
 import datetime as dt
 from collections import defaultdict
+
+import pandas as pd
+import numpy as np
 
 from nba_lineups import *
 from bballref import *

@@ -13,14 +13,16 @@ __description__
 
 import sys, os
 from collections import defaultdict
-import pandas as pd
-import numpy as np
-import datetime as dt
-import requests
-from bs4 import BeautifulSoup
 import re
 import json
 import sqlite3
+import datetime as dt
+
+import pandas as pd
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+
 sys.path.append(os.path.abspath("../sql/"))
 from get_tables import get_tables
 
@@ -101,7 +103,8 @@ def team_stats(stattype = 'Base', season = '2014-15',
     return df
 
 
-def team_merge(season = '2014-15', playoff = 'Regular+Season', somestats = True):
+def team_merge(season = '2014-15', playoff = 'Regular+Season',
+               somestats = True):
     '''
     Takes in a NBA season designated by the year (ie. '2014-15'),
     playoff ('Regular+Season', 'Playoffs')
@@ -113,11 +116,13 @@ def team_merge(season = '2014-15', playoff = 'Regular+Season', somestats = True)
     if somestats:
         types = ['Base', 'Advanced']
     else:
-        types = ['Base', 'Advanced', 'Four+Factors', 'Misc', 'Scoring', 'Opponent']
+        types = ['Base', 'Advanced', 'Four+Factors', 'Misc',
+                 'Scoring', 'Opponent']
 
     df_dict = {}
     for stattype in types:
-        df_dict[stattype] = team_stats(stattype = stattype, season = season, playoff = playoff)
+        df_dict[stattype] = team_stats(stattype = stattype, season = season,
+                                       playoff = playoff)
 
     df = df_dict[df_dict.keys()[0]]
     df = df.drop(['TEAM_ID_opt', 'GP_opt', 'MIN_opt',
@@ -173,10 +178,12 @@ def send_to_sql():
                 continue
             else:
                 if stats == 'somestats':
-                    df = team_merge(season = '2014-15', playoff = 'Regular+Season',
+                    df = team_merge(season = '2014-15',
+                                    playoff = 'Regular+Season',
                                     somestats = True)
                 else:
-                    df = team_merge(season = '2014-15', playoff = 'Regular+Season',
+                    df = team_merge(season = '2014-15',
+                                    playoff = 'Regular+Season',
                                     somestats = False)
                 df.to_sql(tablename, temp.con, flavor = 'sqlite')
                 print

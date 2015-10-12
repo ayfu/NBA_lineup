@@ -7,16 +7,18 @@ __file__
 __description__
 
     provides a function that creates a dataframe of all current NBA players
-    User can define 
+    User can define
 
 '''
 
 import requests
-from bs4 import BeautifulSoup
+import json
 import re
+
+from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
-import json
+
 
 def pID(season = '2014-15'):
     '''
@@ -31,7 +33,8 @@ def pID(season = '2014-15'):
     if type(season) != str:
         raise TypeError('Must input a string')
     if season not in seasons:
-        raise ValueError("Error, please enter in a season between '2000-01' and '2014-15'")
+        raise ValueError("Error, please enter in a season between" +\
+                         " '2000-01' and '2014-15'")
 
     playerurl = 'http://stats.nba.com/league/player/#!/'
     # URL to grab all NBA players, not filtered.

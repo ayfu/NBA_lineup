@@ -14,12 +14,14 @@ __description__
 
 '''
 
-import sys, os
+import sys
+import os
 from collections import defaultdict
-import pandas as pd
-import numpy as np
 import datetime as dt
 import sqlite3
+
+import pandas as pd
+import numpy as np
 from sklearn.cluster import KMeans
 
 params_km = {'n_clusters': 30,
@@ -131,7 +133,8 @@ def cluster_features(bigdf):
     df_min = bigdf.copy()
 
     for lineup in df['lineup'].unique():
-        t_df = df[(df['lineup'] == lineup) & np.logical_not(df['month'].isin([3,4]))]
+        t_df = df[(df['lineup'] == lineup) &
+                  np.logical_not(df['month'].isin([3,4]))]
         for x in t_df['cluster'].unique():
             temp_df = pd.DataFrame(t_df.loc[t_df['cluster'] == x,
                                    brefcol[:-1]].apply(np.mean, axis = 0))

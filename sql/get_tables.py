@@ -11,11 +11,15 @@ __description__
 
 '''
 
-import sys, os, glob
-import pandas as pd
-import numpy as np
+import sys
+import os
+import glob
 import sqlite3
 import re
+
+import pandas as pd
+import numpy as np
+
 
 class dbConnect():
     '''
@@ -70,7 +74,8 @@ def all_tables():
         sql_db = db
         temp = dbConnect(sql_db)
         with temp:
-            temp.cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            temp.cur.execute("SELECT name FROM sqlite_master WHERE" +\
+                             " type='table';")
             tables = temp.cur.fetchall()
             tables = pd.Series([str(tables[x][0]) for x in range(len(tables))])
         return tables

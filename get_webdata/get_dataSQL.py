@@ -11,11 +11,14 @@ __description__
 
 '''
 
-import sys, os, glob
-import pandas as pd
-import numpy as np
+import sys
+import os
+import glob
 import sqlite3
 import re
+
+import pandas as pd
+import numpy as np
 
 #sys.path.append(os.path.abspath("./"))
 from nba_lineups import *
@@ -81,7 +84,8 @@ def all_tables(db):
         sql_db = "sql/" + db
         temp = dbConnect(sql_db)
         with temp:
-            temp.cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            temp.cur.execute("SELECT name FROM sqlite_master WHERE" +\
+                             " type='table';")
             print temp.cur.fetchall()
 
 def main():

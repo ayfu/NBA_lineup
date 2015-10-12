@@ -1,9 +1,22 @@
+'''
 
-import sys, os
+__file__
+
+    nba_encoding.py
+
+__description__
+
+    This file provides methods to encode a dataframe for Random Forests,
+    Gradient Boosting, and Linear regression.
+
+'''
+import sys
+import os
 from collections import defaultdict
+import datetime as dt
+
 import pandas as pd
 import numpy as np
-import datetime as dt
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder, MinMaxScaler
 from sklearn.cross_validation import train_test_split
 
@@ -13,13 +26,13 @@ class PruneLabelEncoder(LabelEncoder):
         super(PruneLabelEncoder, self).__init__()
     def fit(self, series, cutoff=10):
         self.cutoff = cutoff
-        # Generate the transformation classes and also the map for low output munging
+        # Generate the transformation classes and the map for low output munging
         super(PruneLabelEncoder, self).fit(series)
         trans_series = super(PruneLabelEncoder, self).transform(series)
         self.val_count_map = defaultdict(int)
         for i in trans_series:
             self.val_count_map[i] += 1
-        # identify the first key with low frequency and use it for all low freq vals
+        # Identify the first key with low frequency and use it for low freq vals
         for key, val in self.val_count_map.items():
             if val < self.cutoff:
                 self.low_cnt_target = key
@@ -34,7 +47,8 @@ class PruneLabelEncoder(LabelEncoder):
 
 def encode(df, columns, TRANSFORM_CUTOFF):
     '''
-    Takes in a dataframe, columns of interest, and a cutoff value for bucketing encoding values
+    Takes in a dataframe, columns of interest, and a cutoff value for bucketing
+    encoding values
 
     If the frequency of an encoded value is below the cutoff, it will bucket
     everything to the first value it encounters that is below the cutoff value
@@ -131,7 +145,7 @@ def forest_encode(filename = '../csv_data/nba_15season_kMeans_150929.csv',
     test = test.reset_index().drop('index', axis = 1)
     """
     ###########################################################################
-    # SPLIT DATAFRAME ON UNIQUE LINEUPS TO PREVENT DATA LEAKAGE
+    # SPLIT DATAFRAME ON UNIQUE LINEUPS  - not using anymore
     ###########################################################################
     uniq_id = nba_df['lineup'].unique()
     np.random.seed(0) # make sure this split is repeatable
@@ -157,16 +171,24 @@ def forest_encode(filename = '../csv_data/nba_15season_kMeans_150929.csv',
     print 'Test dataframe shape:', test.shape
     print 'Percentage of df for test', test.shape[0]/float(nba_df.shape[0])
     print '# of overlapping lineups:', sum(train['lineup'].isin(test['lineup']))
-    print 'id_df to match labelencoding with lineup in string form:', id_df.shape
-    #print (nba_df['lineup'].isin(test_id) == np.logical_not(trainID_boolmask)).all()
+    print 'id_df to match labelencoding with lineup' +\
+          ' in string form:', id_df.shape
+    """
+    print (nba_df['lineup'].isin(test_id) ==
+            np.logical_not(trainID_boolmask)).all()
 
-    #X_train, X_test, y_train, y_test = train_test_split(nba_df, nba_df['points'], test_size = 0.4, random_state = 1)
-    #X_train, X_test = train_test_split(nba_df, test_size = 0.4, random_state = 1)
-    #print '# of overlapping lineups:', sum(X_train['lineup'].isin(X_test['lineup']))
+    X_train, X_test, y_train, y_test = train_test_split(nba_df,
+                                                        nba_df['points'],
+                                                        test_size = 0.4,
+                                                        random_state = 1)
+    X_train, X_test = train_test_split(nba_df, test_size = 0.4,
+                                       random_state = 1)
+    print '# of overlapping lineups:',
+           sum(X_train['lineup'].isin(X_test['lineup']))
 
-    #print X_train.shape, X_test.shape, y_train.shape, y_test.shape
-    #print X_train.shape, X_test.shape
-
+    print X_train.shape, X_test.shape, y_train.shape, y_test.shape
+    print X_train.shape, X_test.shape
+    """
     return train, test, id_df
 
 
@@ -248,7 +270,8 @@ def lin_encode(filename = '../csv_data/nba_15season_kMeans_150929.csv',
     print 'Test dataframe shape:', test.shape
     print 'Percentage of df for test', test.shape[0]/float(nba_df.shape[0])
     print '# of overlapping lineups:', sum(train['lineup'].isin(test['lineup']))
-    print 'id_df to match labelencoding with lineup in string form:', id_df.shape
+    print 'id_df to match labelencoding with lineup' +\
+          ' in string form:', id_df.shape
 
     return train, test, id_df
 
@@ -300,7 +323,8 @@ def subset_frame(filename = '../csv_data/nba_15season_kMeans_150929.csv',
     # Define new feature avg_pm which gives the plus/minus on average before
     # This feature is also used in building kMeans as well since it's very
     # predictive
-    nba_df['avg_pm'] = 2*(nba_df['fg_pm']-nba_df['TP_pm']) + nba_df['FT_pm'] +  3*nba_df['TP_pm']
+    nba_df['avg_pm'] = 2*(nba_df['fg_pm']-nba_df['TP_pm']) +
+                       nba_df['FT_pm'] +  3*nba_df['TP_pm']
 
     columns = list(nba_df.columns)
     columns.remove('points')

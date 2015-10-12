@@ -11,13 +11,13 @@ __description__
     to format the dataframe
 
 '''
+import re
+import json
 
 import requests
 from bs4 import BeautifulSoup
-import re
 import pandas as pd
 import numpy as np
-import json
 
 from nba_id import *
 
@@ -32,7 +32,8 @@ teams = {'ATL': str(1610612737), 'BOS': str(1610612738), 'BRK': str(1610612751),
          'POR': str(1610612757), 'SAC': str(1610612758), 'SAS': str(1610612759),
          'TOR': str(1610612761), 'UTA': str(1610612762), 'WAS': str(1610612764)}
 
-def lineups(team = teams['GSW'], stattype = 'Base', season = '2014-15', playoff = 'Regular+Season'):
+def lineups(team = teams['GSW'], stattype = 'Base',
+            season = '2014-15', playoff = 'Regular+Season'):
     '''
     Takes in a NBA season designated by the year (ie. '2014-15'),
     Stat type ('Base','Advanced','Four+Factors','Misc','Scoring',
@@ -52,7 +53,8 @@ def lineups(team = teams['GSW'], stattype = 'Base', season = '2014-15', playoff 
     if type(season) != str:
         raise TypeError('Must input a string')
     if season not in seasons:
-        raise ValueError("Error, please enter in a season between '2000-01' and '2014-15'")
+        raise ValueError("Error, please enter in a season between" +\
+                         "'2000-01' and '2014-15'")
     if type(stattype) != str:
         raise TypeError('Must input a string')
     if stattype not in types:
@@ -124,7 +126,8 @@ def lineups(team = teams['GSW'], stattype = 'Base', season = '2014-15', playoff 
 
     return df
 
-def mergedf(team = teams['GSW'], season = '2014-15', playoff = 'Regular+Season'):
+def mergedf(team = teams['GSW'], season = '2014-15',
+            playoff = 'Regular+Season'):
     '''
     Takes in a NBA season designated by the year (ie. '2014-15'),
     playoff ('Regular+Season', 'Playoffs')
@@ -137,7 +140,8 @@ def mergedf(team = teams['GSW'], season = '2014-15', playoff = 'Regular+Season')
 
     df_dict = {}
     for stattype in types:
-        df_dict[stattype] = lineups(team = team, stattype = stattype, season = season, playoff = playoff)
+        df_dict[stattype] = lineups(team = team, stattype = stattype,
+                                    season = season, playoff = playoff)
     # Start with first dataframe (doesn't matter which one)
     # merge on it with the rest of the dataframes in the dictionary
     df = df_dict[df_dict.keys()[0]]

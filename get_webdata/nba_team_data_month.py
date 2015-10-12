@@ -10,25 +10,30 @@ __description__
     sql/nba_stats.db
 
 '''
-
-
-
-import sys, os
-from collections import defaultdict
-import pandas as pd
-import numpy as np
+import sys
+import os
 import datetime as dt
-import requests
-from bs4 import BeautifulSoup
+from collections import defaultdict
 import re
 import json
 import sqlite3
+
+import pandas as pd
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+
 sys.path.append(os.path.abspath("../sql/"))
 from get_tables import get_tables
 
 
 def team_months(team = 'GSW'):
+    """
+    Takes in team name
 
+    Returns dataframe on the team's averages for the first 4 months
+    (October doesn't count as a full month)
+    """
     #team_id = {team_name[x]: all_teams[x] for x in range(len(team_name))}
 
     types = ['Base', 'Advanced', 'Four+Factors', 'Misc', 'Scoring', 'Opponent']
@@ -39,7 +44,7 @@ def team_months(team = 'GSW'):
                '2010-11', '2011-12', '2012-13', '2013-14', '2014-15']
     playoffs = ['Regular+Season', 'Playoffs']
 
-    teams = {'ATL': str(1610612737), 'BOS': str(1610612738), 'BRK': str(1610612751),
+    teams = {'ATL':str(1610612737),'BOS':str(1610612738),'BRK': str(1610612751),
          'CHA': str(1610612766), 'CHI': str(1610612741), 'CLE': str(1610612739),
          'DAL': str(1610612742), 'DEN': str(1610612743), 'DET': str(1610612765),
          'GSW': str(1610612744), 'HOU': str(1610612745), 'IND': str(1610612754),
@@ -88,24 +93,37 @@ def team_months(team = 'GSW'):
     dat = json.loads(r.text)
     header = dat['resultSets'][3]['headers']
     data = dat['resultSets'][3]['rowSet']
+    # Change column names to name_m for merging purposes laser
     header = [x + '_m' for x in header]
     df = pd.DataFrame(data, columns = header)
     df['month_m'] = pd.Series([10, 11, 12, 1, 2, 3, 4])
+    # Drop columns with no value
     df = df.drop(['GROUP_SET_m', 'GROUP_VALUE_m', 'SEASON_MONTH_NAME_m',
                   'CFPARAMS_m', 'CFID_m'], axis = 1)
+    # Only average data not
     df = df[df['month_m'].isin([10, 11, 12, 1, 2,])]
-    df = df[df.columns].apply(np.mean, axis = 0)
+    # Weight values in column by # of games played
+    gp = sum(df['GP_m'])
+    for col in df.columns:
+        if col not in ['GP_m', 'W_m', 'L_m']:
+            df[col] = df[col]*df['GP_m']/float(gp)
+    df = df[df.columns].apply(np.sum, axis = 0)
     df = pd.DataFrame(df).T
     df['team_m'] = [team]*df.shape[0]
     df = df.drop('month_m', axis = 1)
     return df
 
 def allteam_months():
+    """
+    Returns dataframe of every team's statistics for first 4 months
+    (October doesn't count as a full month)
+    """
     t_keys = ['MIL', 'GSW', 'MIN', 'MIA', 'ATL', 'BOS', 'DET',
               'NYK', 'DEN', 'DAL', 'POR', 'ORL', 'TOR', 'CLE',
               'SAS', 'CHA', 'UTA', 'CHI', 'HOU', 'PHO', 'WAS',
               'LAL', 'PHI', 'NOH', 'MEM', 'LAC', 'SAC', 'OKC',
               'BRK', 'IND']
+    # Loop through every team and then concatenate all the dataframes into one
     df_dict = {}
     for team in t_keys:
         df_dict[team] = team_months(team = team)
@@ -115,6 +133,7 @@ def allteam_months():
     return df
 
 class dbConnect():
+    # Class to make SQL connections
     def __init__(self, fileName):
         self.fileName = fileName
         self.con = sqlite3.connect(self.fileName)
@@ -127,6 +146,9 @@ class dbConnect():
         self.con.close()
 
 def month_sql():
+    """
+    Sends the dataframe from allteam_months to the SQLite database
+    """
     db = "../sql/nba_stats.db"
     temp = dbConnect(db)
     tables = get_tables(db)

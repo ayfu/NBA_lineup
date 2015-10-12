@@ -12,15 +12,15 @@ __description__
 
 '''
 
-import sys, os
+import sys
+import os
 from collections import defaultdict
-import pandas as pd
-import numpy as np
 import datetime as dt
 
+import pandas as pd
+import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder, MinMaxScaler
 from sklearn.cross_validation import train_test_split
-
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.metrics import make_scorer, mean_squared_error
@@ -85,23 +85,28 @@ class rfModel():
         self.t_cutoff = TRANSFORM_CUTOFF
     def build_rfmodel(self):
         #x = 'nba_15season_all_150928.csv'
-        self.train, self.test, self.id_df = forest_encode(filename = self.name,
-                                                     min_cutoff = self.min_cutoff,
-                                                     TRANSFORM_CUTOFF = self.t_cutoff)
+        self.train, self.test, self.id_df = forest_encode(
+                                               filename = self.name,
+                                               min_cutoff = self.min_cutoff,
+                                               TRANSFORM_CUTOFF = self.t_cutoff)
         """
         # TESTING GROUNDS
         bestcol = [...put list of columns here for testing features...]
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
-        bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
+        bestcol = np.logical_not(self.train.columns.str.contains(
+                                                       '_std|_max|_min|' +\
+                                                       '_5std|_5max|_5min|'+\
+                                                       'Unnamed'))
         bestcol = self.train.columns[bestcol]
 
         # Subset of features you want to train on
         self.train = self.train[bestcol]
         self.test = self.test[bestcol]
 
-        print 'After filtering: train shape , test shape:', self.train.shape, self.test.shape
+        print 'After filtering: train shape ,' +\
+              ' test shape:', self.train.shape, self.test.shape
         ###
         # Convert to matrix for scikit learn
         X = self.train.as_matrix(self.train.columns[:-1]).astype(float)
@@ -133,7 +138,8 @@ class rfModel():
         ax.bar(self.feat_imp.index[:15], self.feat_imp['importance'].head(15),
                align = 'center', color = color, alpha = 1)
         ax.set_xticks(np.arange(0,len(self.feat_imp.head(15))))
-        ax.set_xticklabels(self.feat_imp['feature'].head(15), rotation=90, fontsize=15)
+        ax.set_xticklabels(self.feat_imp['feature'].head(15),
+                           rotation=90, fontsize=15)
         ax.set_ylabel('Importance', fontsize = 15)
 
     def plot_result(self, color = 'green'):
@@ -167,13 +173,15 @@ class gbModel():
     def build_gbmodel(self):
         #x = 'nba_15season_all_150928.csv'
         """
-        self.train, self.test, self.id_df = forest_encode(filename = self.name,
-                                                     min_cutoff = self.min_cutoff,
-                                                     TRANSFORM_CUTOFF = self.t_cutoff)
+        self.train, self.test, self.id_df = forest_encode(
+                                               filename = self.name,
+                                               min_cutoff = self.min_cutoff,
+                                               TRANSFORM_CUTOFF = self.t_cutoff)
         """
-        self.train, self.test, self.id_df = lin_encode(filename = self.name,
-                                                     min_cutoff = self.min_cutoff,
-                                                     TRANSFORM_CUTOFF = self.t_cutoff)
+        self.train, self.test, self.id_df = lin_encode(
+                                               filename = self.name,
+                                               min_cutoff = self.min_cutoff,
+                                               TRANSFORM_CUTOFF = self.t_cutoff)
 
         """
         # TESTING GROUNDS
@@ -181,14 +189,19 @@ class gbModel():
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
-        bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
+        bestcol = np.logical_not(self.train.columns.str.contains(
+                                                                '_std|_max|'+\
+                                                                '_min|_5std|'+\
+                                                                '_5max|_5min|'+\
+                                                                'Unnamed'))
         bestcol = self.train.columns[bestcol]
 
         # Subset of features you want to train on
         self.train = self.train[bestcol]
         self.test = self.test[bestcol]
 
-        print 'After filtering: train shape , test shape:', self.train.shape, self.test.shape
+        print 'After filtering: train shape ,'+\
+              ' test shape:', self.train.shape, self.test.shape
         ###
         # Convert to matrix for scikit-learn
         X = self.train.as_matrix(self.train.columns[:-1]).astype(float)
@@ -218,7 +231,8 @@ class gbModel():
         ax.bar(self.feat_imp.index[:15], self.feat_imp['importance'].head(15),
                align = 'center', color = color, alpha = 1)
         ax.set_xticks(np.arange(0,len(self.feat_imp.head(15))))
-        ax.set_xticklabels(self.feat_imp['feature'].head(15), rotation=90, fontsize=15)
+        ax.set_xticklabels(self.feat_imp['feature'].head(15),
+                           rotation=90, fontsize=15)
         ax.set_ylabel('Importance', fontsize = 15)
 
     def plot_result(self, color = 'green'):
@@ -251,16 +265,21 @@ class linModel():
         self.lintype = lintype
     def build_linmodel(self):
         x = 'nba_15season_all_150928.csv'
-        self.train, self.test, self.id_df = lin_encode(filename = self.name,
-                                                     min_cutoff = self.min_cutoff,
-                                                     TRANSFORM_CUTOFF = self.t_cutoff)
+        self.train, self.test, self.id_df = lin_encode(
+                                               filename = self.name,
+                                               min_cutoff = self.min_cutoff,
+                                               TRANSFORM_CUTOFF = self.t_cutoff)
         """
         # TESTING GROUNDS
         bestcol = [...put list of columns here for testing features...]
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
-        bestcol = np.logical_not(self.train.columns.str.contains('_std|_max|_min|_5std|_5max|_5min|Unnamed'))
+        bestcol = np.logical_not(self.train.columns.str.contains(
+                                                                '_std|_max|'+\
+                                                                '_min|_5std|'+\
+                                                                '_5max|_5min|'+\
+                                                                'Unnamed'))
         bestcol = self.train.columns[bestcol]
 
         # Subset of features you want to train on
@@ -306,7 +325,8 @@ class linModel():
         ax.bar(self.coef_imp.index[:15], self.coef_imp['coefficient'].head(15),
                align = 'center', color = color, alpha = 1)
         ax.set_xticks(np.arange(0,len(self.coef_imp.head(15))))
-        ax.set_xticklabels(self.coef_imp['feature'].head(15), rotation=90, fontsize=15)
+        ax.set_xticklabels(self.coef_imp['feature'].head(15),
+                           rotation=90, fontsize=15)
         ax.set_ylabel('Coefficient', fontsize = 15)
 
     def plot_result(self, color = 'green'):

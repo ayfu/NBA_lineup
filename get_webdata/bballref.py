@@ -14,14 +14,17 @@ __description__
 
 import sys
 import requests
-from bs4 import BeautifulSoup
+import unicodedata
 import re
+
+from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
-import unicodedata
 
 
-def get_url(lineup = '5-man', output = 'total', year = '2015', playoffs = 'N', team = 'GSW', opp = '', month = ''):
+
+def get_url(lineup = '5-man', output = 'total', year = '2015',
+            playoffs = 'N', team = 'GSW', opp = '', month = ''):
     '''
     takes in lineup, output, year, playoffs, team, opposing team, and month
 
@@ -128,9 +131,11 @@ def get_pagedata(url):
     try:
         dat = dat.findAll('td', {'align':{"right"}}, csk = re.compile('[0-9]+'))
         for i in range(len(dat)):
-            # Convert unicode to ascii format so I can concatenate it into a data frame
-            temp = unicodedata.normalize('NFKD', dat[i].parent.get_text()).encode('ascii','ignore')
-            # Create a list of each element in a row (before it was just one long string)
+            # Convert unicode to ascii format to concatenate it into a dataframe
+            temp = unicodedata.normalize(
+                    'NFKD', dat[i].parent.get_text()).encode('ascii','ignore')
+            # Create a list of each element in a row
+            # before it was just one long string
             temp = temp.split('\n')[1:-1]
             df_temp = pd.DataFrame(np.array([temp]),columns = cols)
             df = pd.concat([df, df_temp],axis = 0)
@@ -149,7 +154,9 @@ def get_nextlink(url):
     soup = BeautifulSoup(html.content)
     urlbase = 'http://www.basketball-reference.com'
     # Find all the links that are either previous page or next page
-    ind = soup.findAll('a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+'[A-Za-z0-9\.&_;+:?]+'))
+    ind = soup.findAll(
+            'a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+\
+            '[A-Za-z0-9\.&_;+:?]+'))
     for x in ind:
         if x.get_text() == 'Next page':
             newurl = urlbase + x.attrs['href']
@@ -170,7 +177,9 @@ def nextlink(url):
     soup = BeautifulSoup(html.content)
     urlbase = 'http://www.basketball-reference.com'
     # Find all the links that are either previous page or next page
-    ind = soup.findAll('a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+'[A-Za-z0-9\.&_;+:?]+'))
+    ind = soup.findAll(
+            'a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+\
+            '[A-Za-z0-9\.&_;+:?]+'))
     newurl = ''
     for x in ind:
         if x.get_text() == 'Next page':
@@ -186,7 +195,8 @@ def get_alldata(url):
     '''
     takes in a bball-ref url for lineup stats
 
-    returns a dataframe of all the data associated with the URL query for bball-reference lineup.
+    returns a dataframe of all the data associated with the URL query for
+    bball-reference lineup.
 
     data is spread across multiple pages
     '''
@@ -246,7 +256,7 @@ def convert_numbers(df):
             print "Loop not supposed to get here for", x
     return df
 
-'''
+"""
 if __name__ == "__main__":
     team = sys.argv[1]
     if len(team)>0:
@@ -256,4 +266,4 @@ if __name__ == "__main__":
         df = get_alldata(get_url())
         df = convert_numbers(df)
 
-'''
+"""
