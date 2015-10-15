@@ -323,7 +323,7 @@ def subset_frame(filename = '../csv_data/nba_15season_kMeans_150929.csv',
     # Define new feature avg_pm which gives the plus/minus on average before
     # This feature is also used in building kMeans as well since it's very
     # predictive
-    nba_df['avg_pm'] = 2*(nba_df['fg_pm']-nba_df['TP_pm']) +
+    nba_df['avg_pm'] = 2*(nba_df['fg_pm']-nba_df['TP_pm']) + \
                        nba_df['FT_pm'] +  3*nba_df['TP_pm']
 
     columns = list(nba_df.columns)
