@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Optimize NBA Coaching</title>
+
+    <link rel="stylesheet" href="/static/css/font-awesome.css">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/cover.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!--
+    <script src="/static/js/ie-emulation-modes-warning.js"></script>
+    -->
+
+    <!--
+    {{ js_resources|indent(4)|safe }}
+
+    {{ css_resources|indent(4)|safe }}
+    -->
+    <!-- this works too in place of js_resources and css_resources -->
+
+    <link  href="http://cdn.pydata.org/bokeh/release/bokeh-0.10.0.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.10.0.min.js"></script>
+    <script type="text/javascript">
+      Bokeh.set_log_level("info");
+    </script>
+    {{ plot_script|indent(4)|safe }}
+
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">
+                <a href="{{ url_for('index') }}">Optimize NBA Coaching</a></h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li class="active"><a href="{{ url_for('index') }}"><i class="fa fa-home fa-lg"></i></a></li>
+                  <li><a href="https://github.com/ayfu/">
+                    <i class="fa fa-github fa-lg"></i></a></li>
+                  <li><a href="https://www.linkedin.com/in/afu87">
+                    <i class="fa fa-linkedin fa-lg"></i></a></li>
+                  <li><a href="{{ url_for('about') }}">About</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        <div style="margin-bottom:4em;"><span style="display:none;">.</span></div>
+          <div class="inner cover">
+            <div class="inner-body">
+              <div align = "left">
+                {{ plot_div|indent(4)|safe }}
+
+              </div>
+              <!--
+              <img src = "{{ url_for('img', input_team = input_team) }}" alt="result" align="center" width="{{wide}}"/>
+              -->
+              <p></p>
+              <div class = "covertext">
+                <p>Teams displayed: {{input_team}}</p>
+              </div>
+            </div>
+            <div class="explaintext">
+              <p>Any data point that lies on the black dotted line is a perfect prediction. A data point in the shaded green region means that the model correctly predicts a favorable matchup or an unfavorable matchup. Data points outside the green region are false positive or false negatives.</p>
+            </div>
+            <p class="lead">
+              <a href="{{ url_for('about') }}" class="btn btn-lg btn-default">Learn more</a> <a href="#model" class="btn btn-lg btn-default">Try model</a> <a href="#results" class="btn btn-lg btn-default">Detailed Results</a>
+            </p>
+          </div>
+        </div>
+
+          <!--div class="mastfoot">
+            <div class="inner">
+              <p>Website designed using <a href="http://flask.pocoo.org/">Flask</a> and <a href="http://getbootstrap.com">Bootstrap</a>.</p>
+            </div>
+          </div-->
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <a  name="results"></a>
+    <div style="margin-bottom:5em;"><span style="display:none;">.</span></div>
+    <div class = "modeltext">
+    <div class = "results">
+    <div class="inner-body">
+      <p class="lead">
+        <a href="#model" class="btn btn-lg btn-default">Choose New Team</a>
+      </p>
+      <table border="5" style="width:60%">
+        <tr>
+          <td>lineup</td>
+          <td>team</td>
+          <td>opponent</td>
+          <td>month</td>
+          <td>day</td>
+          <td>base model</td>
+          <td>new model</td>
+          <td>actual</td>
+        </tr>
+      {% for df in entries %}
+        <tr>
+          <td>{{df['lineup']}}</td>
+          <td>{{df['team']}}</td>
+          <td>{{df['opponent']}}</td>
+          <td>{{df['month']}}</td>
+          <td>{{df['day']}}</td>
+          <td>{{df['base']}}</td>
+          <td>{{df['pred']}}</td>
+          <td>{{df['points']}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+    </div>
+    </div>
+
+
+    <a  name="model"></a>
+    <div class = "container ">   <!-- container for inputs and the map -->
+    <div class = "container set_width">  <!-- container for input1 and input2 -->
+    <div class = "modeltext">
+    <!--
+    <form class="form-horizontal"> -->
+    <form  class="form-horizontal" action="/output" method="GET">
+
+    <div class="container set_width2">   <!-- container of amenities -->
+      <div class="checkbox-group hosting_amenities filters-section panel-body panel-light" data-name="hosting_amenities">
+        <div class="row">
+          <div class="col-md-2 filter-label">
+            <label>Choose Team</label>
+          </div>
+
+          <div class="col-md-9">
+            <div class="row row-condensed filters-columns">
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="All Teams">
+                  <input type="checkbox" name="ALL" value="ALL" class="pull-left">
+                  All Teams
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Atlanta Hawks">
+                  <input type="checkbox" name="ATL" value="ATL" class="pull-left">
+                  Atlanta Hawks
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Boston Celtics">
+                  <input type="checkbox" name="BOS" value="BOS" class="pull-left">
+                  Boston Celtics
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Brooklyn Nets">
+                  <input type="checkbox" name="BKN" value="BKN" class="pull-left">
+                  Brooklyn Nets
+                </label>
+              </div>
+
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Charlotte Hornets">
+                  <input type="checkbox" name="CHA" value="CHA" class="pull-left">
+                  Charlotte Hornets
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Chicago Bulls">
+                  <input type="checkbox" name="CHI" value="CHI" class="pull-left">
+                  Chicago Bulls
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Cleveland Cavaliers">
+                  <input type="checkbox" name="CLE" value="CLE" class="pull-left">
+                  Cleveland Cavaliers
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Dallas Mavericks">
+                  <input type="checkbox" name="DAL" value="DAL" class="pull-left">
+                  Dallas Mavericks
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Detroit Pistons">
+                  <input type="checkbox" name="DET" value="DET" class="pull-left">
+                  Detroit Pistons
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Golden State Warriors">
+                  <input type="checkbox" name="GSW" value="GSW" class="pull-left">
+                  Golden State Warriors
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Houston Rockets">
+                  <input type="checkbox" name="HOU" value="HOU" class="pull-left">
+                  Houston Rockets
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Indiana Pacers">
+                  <input type="checkbox" name="IND" value="IND" class="pull-left">
+                  Indiana Pacers
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Los Angeles Clippers">
+                  <input type="checkbox" name="LAC" value="LAC" class="pull-left">
+                  Los Angeles Clippers
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Los Angeles Lakers">
+                  <input type="checkbox" name="LAL" value="LAL" class="pull-left">
+                  Los Angeles Lakers
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Memphis Grizzlies">
+                  <input type="checkbox" name="MEM" value="MEM" class="pull-left">
+                  Memphis Grizzlies
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Miami Heat">
+                  <input type="checkbox" name="MIA" value="MIA" class="pull-left">
+                  Miami Heat
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Milwaukee Bucks">
+                  <input type="checkbox" name="MIL" value="MIL" class="pull-left">
+                  Milwaukee Bucks
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="New Orleans Pelicans">
+                  <input type="checkbox" name="NOP" value="NOP" class="pull-left">
+                  New Orleans Pelicans
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Oklahoma City Thunder">
+                  <input type="checkbox" name="OKC" value="OKC" class="pull-left">
+                  Oklahoma City Thunder
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Orlando Magic">
+                  <input type="checkbox" name="ORL" value="ORL" class="pull-left">
+                  Orlando Magic
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Phoenix Suns">
+                  <input type="checkbox" name="PHO" value="PHO" class="pull-left">
+                  Phoenix Suns
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Portland Trailblazers">
+                  <input type="checkbox" name="POR" value="POR" class="pull-left">
+                  Portland Trailblazers
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Sacramento Kings">
+                  <input type="checkbox" name="SAC" value="SAC" class="pull-left">
+                  Sacramento Kings
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="San Antonio Spurs">
+                  <input type="checkbox" name="SAS" value="SAS" class="pull-left">
+                  San Antonio Spurs
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Toronto Raptors">
+                  <input type="checkbox" name="TOR" value="TOR" class="pull-left">
+                  Toronto Raptors
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Utah Jazz">
+                  <input type="checkbox" name="UTA" value="UTA" class="pull-left">
+                  Utah Jazz
+                </label>
+              </div>
+              <div class="col-md-4">
+                <label class="media checkbox text-truncate" title="Washington Wizards">
+                  <input type="checkbox" name="WAS" value="WAS" class="pull-left">
+                  Washington Wizards
+                </label>
+              </div>
+            </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div> <!-- amenity container ends here -->
+
+    <div class="form-group">
+          <div class="col-lg-2">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+          </div>
+    </div>
+
+
+    </form>
+    <!--
+    <div class="inner-body">
+      <img src = "{{ url_for('img', input_team = input_team) }}" alt="result" align="center" width="{{wide}}"/>
+    </div>
+    -->
+    </div>   <!-- container of input1 and input2 ends here -->
+
+    <br><br>
+
+
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
+    <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+
+  </body>
+</html>
