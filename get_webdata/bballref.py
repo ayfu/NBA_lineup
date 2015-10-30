@@ -7,7 +7,8 @@ __file__
 __description__
 
     This  file provides a way to scrape basketball-reference.com for the
-    statistics on various lineups throughout the league. The user can specify what kind of lineup type, which team, year, playoffs (Y/N/Both = ''),
+    statistics on various lineups throughout the league. The user can specify
+    what kind of lineup type, which team, year, playoffs (Y/N/Both = ''),
     opposing team, and month.
 
 '''
