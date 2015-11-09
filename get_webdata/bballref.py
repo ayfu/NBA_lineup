@@ -121,10 +121,10 @@ def get_pagedata(url):
     cols = ['id','lineup','date','team','away_game','opponent', 'result',
             'minutes','num_poss', 'opp_poss','pace','fg','fga', 'fg_percent',
             'TP', 'TPA','TP_percent','eFG','FT','FTA', 'FT_percent','points']
-    df.columns = cols
+    df = df[cols]
 
     html = requests.get(url)
-    soup = BeautifulSoup(html.content)
+    soup = BeautifulSoup(html.content, "lxml")
     # Find the 'tbody' section, the body of the main table. Only one per page
     dat = soup.find('tbody')
     # Create a list of all the elements in the Rank column (labeled 1,2,3,...)
@@ -149,48 +149,22 @@ def get_nextlink(url):
     takes in a bball-ref url for lineup stats
 
     returns the URL of the link for 'Next page' on the webpage.
-    If there's no 'Next page' link, then it has finished scraping.
+    If there's no 'Next page' link, then it returns None.
     '''
     html = requests.get(url)
-    soup = BeautifulSoup(html.content)
+    soup = BeautifulSoup(html.content, "lxml")
     urlbase = 'http://www.basketball-reference.com'
     # Find all the links that are either previous page or next page
     ind = soup.findAll(
             'a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+\
             '[A-Za-z0-9\.&_;+:?]+'))
+    newurl = None
     for x in ind:
         if x.get_text() == 'Next page':
             newurl = urlbase + x.attrs['href']
         else:
             continue
-    try:
-        return newurl
-    except:
-        print 'End of data scraping'
-
-def nextlink(url):
-    '''
-    takes in a bball-ref url for lineup stats
-
-    returns a Boolean of whether there's a 'Next page' button or not
-    '''
-    html = requests.get(url)
-    soup = BeautifulSoup(html.content)
-    urlbase = 'http://www.basketball-reference.com'
-    # Find all the links that are either previous page or next page
-    ind = soup.findAll(
-            'a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+\
-            '[A-Za-z0-9\.&_;+:?]+'))
-    newurl = ''
-    for x in ind:
-        if x.get_text() == 'Next page':
-            newurl = 'hit'
-        else:
-            continue
-    if newurl == '':
-        return False
-    else:
-        return True
+    return newurl
 
 def get_alldata(url):
     '''
@@ -207,7 +181,7 @@ def get_alldata(url):
     df_dict = {}
     i = 1
     df_dict['page'+str(i)] = get_pagedata(url)
-    while nextlink(url):
+    while get_nextlink(url) != None:
         i += 1
         name = 'page' + str(i)
         url = get_nextlink(url)
@@ -231,7 +205,7 @@ def convert_numbers(df):
 
     # convert id column to int and then sort dataframe based on id
     df['id']=df['id'].astype(int)
-    df = df.sort('id')
+    df = df.sort_values('id')
     df = df.reset_index().drop('index',axis = 1)
     df['date'] = pd.to_datetime(df.date,format= '%Y-%m-%d')
 
