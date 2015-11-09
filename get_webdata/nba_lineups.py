@@ -98,7 +98,7 @@ def lineups(team = teams['GSW'], stattype = 'Base',
     data = dat['resultSets'][0]['rowSet']
     df = pd.DataFrame(data, columns = header)
     if stattype == 'Base':
-        df = df.sort('PLUS_MINUS', ascending = False)
+        df = df.sort_values('PLUS_MINUS', ascending = False)
         df = df.reset_index().drop('index', axis = 1)
     df2 = pID(season) #create a player ID data frame to match ID with ab_name
 
