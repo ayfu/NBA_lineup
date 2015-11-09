@@ -11,10 +11,10 @@ __description__
 
 '''
 
-import requests
 import json
 import re
 
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
@@ -26,8 +26,7 @@ def pID(season = '2014-15'):
 
     Returns a dataframe of a players NBA ID, name, and abbreviated name
     '''
-    seasons = [#'1996-97', '1997-98', '1998-99', '1999-00',
-               '2000-01', '2001-02', '2002-03', '2003-04', '2004-05',
+    seasons = ['2000-01', '2001-02', '2002-03', '2003-04', '2004-05',
                '2005-06', '2006-07', '2007-08', '2008-09', '2009-10',
                '2010-11', '2011-12', '2012-13', '2013-14', '2014-15']
     if type(season) != str:
@@ -68,9 +67,11 @@ def pID(season = '2014-15'):
         else:
             # Take each name, split it to First and last name
             # Jeremy Lin -> J. Lin
-            n = df.loc[i, 'name'].split(' ')[0][0]+'. '+df.loc[i, 'name'].split(' ')[1]
+            first = df.loc[i, 'name'].split(' ')[0][0]
+            last = df.loc[i, 'name'].split(' ')[1]
+            n = first + '. ' + last
             df.loc[i, 'ab_name'] = n
 
-    df = df.sort('id')
+    df = df.sort_values('id')
     df = df.reset_index().drop('index', axis = 1)
     return df
