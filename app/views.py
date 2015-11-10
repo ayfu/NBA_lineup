@@ -180,13 +180,15 @@ def output():
 
 
     # create a new plot with the tools above, and explicit ranges
-    TOOLS="resize, pan, wheel_zoom, box_zoom, reset, hover"
+    TOOLS = "resize, pan, wheel_zoom, box_zoom, reset, hover"
     p = figure(tools = TOOLS, x_range=(-175,175), y_range=(-175, 175),
                plot_width = int(wide), plot_height = int(height))
+    # Plot fill quadrant 1 and 4
     p.patch([0, 0, 5000, 5000], [0, 5000, 5000, 0],
             alpha =  0.3, color = (6, 110, 10))
     p.patch([0, 0, -5000, -5000],[0, -5000, -5000, 0],
             alpha = 0.3, color = (6, 110, 10))
+    # Plot results
     p.line(np.arange(-2000,2000,100), np.arange(-2000,2000,100),
            line_width = 2, color = "grey", legend = "Perfect Prediction")
     p.circle('x', 'base', source = source, radius=3,
