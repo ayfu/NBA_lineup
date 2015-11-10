@@ -146,6 +146,16 @@ class rfModel():
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
+        # Plot fill
+        x1 = np.arange(0,180)
+        y1 = np.zeros(180)+180
+        x2 = np.arange(0,-180, -1)
+        y2 = np.zeros(180)-180
+        ax.plot(x1, y1)
+        plt.fill_between(x1, y1, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+        plt.fill_between(x2, y2, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+
+        # Plot Results
         ax.scatter(self.y_test, self.y_pred, color = color,
                    label = 'Data', s = 100, alpha = 0.1)
         #ax.plot(x,pred_y, label = 'Fit', lw = 5)
@@ -239,6 +249,16 @@ class gbModel():
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
+        # Plot fill
+        x1 = np.arange(0,180)
+        y1 = np.zeros(180)+180
+        x2 = np.arange(0,-180, -1)
+        y2 = np.zeros(180)-180
+        ax.plot(x1, y1)
+        plt.fill_between(x1, y1, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+        plt.fill_between(x2, y2, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+
+        # Plot results
         ax.scatter(self.y_test, self.y_pred, color = color,
                    label = 'Data', s = 100, alpha = 0.1)
         #ax.plot(x,pred_y, label = 'Fit', lw = 5)
@@ -333,6 +353,16 @@ class linModel():
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
+        # Plot fill
+        x1 = np.arange(0,180)
+        y1 = np.zeros(180)+180
+        x2 = np.arange(0,-180, -1)
+        y2 = np.zeros(180)-180
+        ax.plot(x1, y1)
+        plt.fill_between(x1, y1, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+        plt.fill_between(x2, y2, 0, color=(0.01,0.40,0.1), alpha = 0.25)
+
+        # Plot results          
         ax.scatter(self.y_test, self.y_pred, color = color,
                    label = 'Data', s = 100, alpha = 0.1)
         #ax.plot(x,pred_y, label = 'Fit', lw = 5)
