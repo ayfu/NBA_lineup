@@ -191,10 +191,18 @@ def output():
     # Plot results
     p.line(np.arange(-2000,2000,100), np.arange(-2000,2000,100),
            line_width = 2, color = "grey", legend = "Perfect Prediction")
-    p.circle('x', 'base', source = source, radius=3,
-             color = (0, 51, 127.5), alpha = 0.9, legend = "Base Model")
     p.circle('x', 'y', source = source, radius=3,
              color = (153, 0, 51), alpha = 0.9, legend = "New Model")
+
+    # Plot styling
+    p.text(50, 150, text = ['True Positive:'], text_font_size="10pt")
+    p.text(50, 135, text = ['Favorable Matchup'], text_font_size="10pt")
+    p.text(-120, -135, text = ['True Negative:'], text_font_size="10pt")
+    p.text(-120, -150, text = ['Unfavorable Matchup'], text_font_size="10pt")
+    p.text(80, -135, text = ['False Negative:'], text_font_size="10pt")
+    p.text(80, -150, text = ['Missed Opportunity'], text_font_size="10pt")
+    p.text(-150, 100, text = ['False Positive:'], text_font_size="10pt")
+    p.text(-150, 85, text = ['Mistaken Prediction'], text_font_size="10pt")
     p.legend.orientation = "top_left"
     p.xaxis.axis_label = 'Actual +/- (points/48min)'
     p.yaxis.axis_label = 'Predicted +/- (points/48min)'
