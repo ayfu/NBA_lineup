@@ -31,8 +31,9 @@ sys.path.append(os.path.abspath("../sql/"))
 from get_tables import *
 
 '''
-Parameters for RandomForestRegressor
+Parameters for different Models
 '''
+# Random Forest
 params_rf = {'n_estimators': 200,
           'criterion': "mse",
           'max_features': "auto",
@@ -44,7 +45,7 @@ params_rf = {'n_estimators': 200,
           #'max_leaf_notes': None
           'verbose': 1
           }
-
+# Gradient Boosting
 params_gbr = {'loss': 'ls',
               'learning_rate': 0.02,
               'n_estimators': 100,
@@ -53,18 +54,18 @@ params_gbr = {'loss': 'ls',
               'min_samples_leaf': 3,
               'subsample': 0.7
              }
-
+# Linear Regression
 params_lin = {'fit_intercept': True,
           'normalize': False,
           'copy_X': True,
           'n_jobs': 1
           }
-
+# Lasso Regression
 params_lasso = {'alpha': 0.2,
                 'fit_intercept': True,
                 'normalize': False,
                 'copy_X': True}
-
+# Ridge Regression
 params_ridge = {'alpha': 0.4,
                 'fit_intercept': True,
                 'normalize': False,
@@ -75,7 +76,7 @@ class rfModel():
     '''
     Takes in: parameters for Random Forest
 
-    Returns: predictions
+    Returns: predictions and an evaluation of the model
     '''
     def __init__(self, params, name, min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1):
@@ -83,8 +84,19 @@ class rfModel():
         self.name = name
         self.min_cutoff = min_cutoff
         self.t_cutoff = TRANSFORM_CUTOFF
+
     def build_rfmodel(self):
-        #x = 'nba_15season_all_150928.csv'
+        """
+        Takes in nothing (already set in Class Variable)
+
+        Does Random Forest
+
+        Makes predictions (self.y_pred) and calculates feature importances
+        (self.feat_imp), oob prediction (self.oob_prediction_), and estimators
+        (self.estimators_)
+
+        Prints RMSE score on predicting the results of the last two months
+        """
         self.train, self.test, self.id_df = forest_encode(
                                                filename = self.name,
                                                min_cutoff = self.min_cutoff,
@@ -95,6 +107,7 @@ class rfModel():
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
+        # I do not always use these next two lines. I change them frequently
         bestcol = np.logical_not(self.train.columns.str.contains(
                                                        '_std|_max|_min|' +\
                                                        '_5std|_5max|_5min|'+\
@@ -107,8 +120,8 @@ class rfModel():
 
         print 'After filtering: train shape ,' +\
               ' test shape:', self.train.shape, self.test.shape
-        ###
-        # Convert to matrix for scikit learn
+
+        # Convert to matrix for scikit learn and make a prediction
         X = self.train.as_matrix(self.train.columns[:-1]).astype(float)
         y = self.train.as_matrix(['points'])[:, 0].astype(float)
         X_test = self.test.as_matrix(self.test.columns[:-1]).astype(float)
@@ -118,6 +131,7 @@ class rfModel():
         rf.fit(X, y)
         self.y_pred = rf.predict(X_test)
 
+        # Evaluate performance of the RF prediction
         print 'OOB score:', rf.oob_score_
         error = mean_squared_error(self.y_pred, self.y_test)**0.5
         print 'RMSE:', error
@@ -132,6 +146,12 @@ class rfModel():
         self.estimators_ = rf.estimators_
 
     def features(self, color = 'purple'):
+        """
+        Takes in color preference
+
+        Returns a bar plot of the 15 most important features. A dataframe of
+        the feature importances can be found at self.feat_imp
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -143,6 +163,12 @@ class rfModel():
         ax.set_ylabel('Importance', fontsize = 15)
 
     def plot_result(self, color = 'green'):
+        """
+        Takes in color preference
+
+        Returns a scatter plot of the predicted values vs. the actual values.
+        This helps with visualizing the performance of the model.
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -170,9 +196,9 @@ class rfModel():
 
 class gbModel():
     '''
-    Takes in: parameters for Random Forest
+    Takes in: parameters for Gradient Boosting
 
-    Returns: predictions
+    Returns: predictions and an evaluation performance of the model
     '''
     def __init__(self, params, name, min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1):
@@ -181,7 +207,19 @@ class gbModel():
         self.min_cutoff = min_cutoff
         self.t_cutoff = TRANSFORM_CUTOFF
     def build_gbmodel(self):
-        #x = 'nba_15season_all_150928.csv'
+        """
+        Takes in nothing (already set in Class Variable)
+
+        Does Stochastic Gradient Boosting Regression
+
+        Makes predictions (self.y_pred) and calculates feature importances
+        (self.feat_imp) and estimators (self.estimators_)
+
+        Prints RMSE score on predicting the results of the last two months
+        """
+        # Can try two different encoding schemes: forest_encode or lin_encode
+        # lin_encode one-hot encodes the categorical variables
+        # usually not necessary for decision trees
         """
         self.train, self.test, self.id_df = forest_encode(
                                                filename = self.name,
@@ -199,6 +237,7 @@ class gbModel():
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
+        # I do not always use these next two lines. I change them frequently
         bestcol = np.logical_not(self.train.columns.str.contains(
                                                                 '_std|_max|'+\
                                                                 '_min|_5std|'+\
@@ -235,6 +274,12 @@ class gbModel():
         self.estimators_ = rf.estimators_
 
     def features(self, color = 'purple'):
+        """
+        Takes in color preference
+
+        Returns a bar plot of the 15 most important features. A dataframe of
+        the feature importances can be found at self.feat_imp
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -246,6 +291,12 @@ class gbModel():
         ax.set_ylabel('Importance', fontsize = 15)
 
     def plot_result(self, color = 'green'):
+        """
+        Takes in color preference
+
+        Returns a scatter plot of the predicted values vs. the actual values.
+        This helps with visualizing the performance of the model.
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -274,7 +325,7 @@ class linModel():
     '''
     Takes in: parameters for linearRegression
 
-    Returns: predictions
+    Returns: predictions and an evaluation of the performance of the model
     '''
     def __init__(self, params, name, min_cutoff = 1,
                   TRANSFORM_CUTOFF = 1, lintype = 'Linear'):
@@ -284,7 +335,17 @@ class linModel():
         self.t_cutoff = TRANSFORM_CUTOFF
         self.lintype = lintype
     def build_linmodel(self):
-        x = 'nba_15season_all_150928.csv'
+        """
+        Takes in nothing (already set in Class Variable)
+        Choosen between unregularized, Lasso, or Ridge
+
+        Does Linear Regression
+
+        Makes predictions (self.y_pred) and calculates coefficients
+        (self.coef_imp) and intercepts (self.intercept)
+
+        Prints RMSE score on predicting the results of the last two months
+        """
         self.train, self.test, self.id_df = lin_encode(
                                                filename = self.name,
                                                min_cutoff = self.min_cutoff,
@@ -295,6 +356,7 @@ class linModel():
         bestcol = bestcol + ['points']
         """
         # Use these next two lines if you want to filter out these aggregates
+        # I do not always use these next two lines. I change them frequently
         bestcol = np.logical_not(self.train.columns.str.contains(
                                                                 '_std|_max|'+\
                                                                 '_min|_5std|'+\
@@ -339,6 +401,12 @@ class linModel():
         self.intercept = self.lr.intercept_
 
     def features(self, color = 'purple'):
+        """
+        Takes in color preference
+
+        Returns a bar plot of the 15 largest coefficients. A dataframe of
+        the coefficients can be found at self.coef_imp
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -350,6 +418,12 @@ class linModel():
         ax.set_ylabel('Coefficient', fontsize = 15)
 
     def plot_result(self, color = 'green'):
+        """
+        Takes in color preference
+
+        Returns a scatter plot of the predicted values vs. the actual values.
+        This helps with visualizing the performance of the model.
+        """
         plt.style.use('ggplot')
         fig, ax = plt.subplots(figsize = (10,8))
 
@@ -362,7 +436,7 @@ class linModel():
         plt.fill_between(x1, y1, 0, color=(0.01,0.40,0.1), alpha = 0.25)
         plt.fill_between(x2, y2, 0, color=(0.01,0.40,0.1), alpha = 0.25)
 
-        # Plot results          
+        # Plot results
         ax.scatter(self.y_test, self.y_pred, color = color,
                    label = 'Data', s = 100, alpha = 0.1)
         #ax.plot(x,pred_y, label = 'Fit', lw = 5)
