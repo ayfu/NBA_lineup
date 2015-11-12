@@ -14,10 +14,10 @@ __description__
 '''
 
 import sys
-import requests
 import unicodedata
 import re
 
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
@@ -157,7 +157,7 @@ def get_nextlink(url):
     # Find all the links that are either previous page or next page
     ind = soup.findAll(
             'a', href = re.compile('^(/play-index/plus/lineup_finder.cgi)'+\
-            '[A-Za-z0-9\.&_;+:?]+'))
+                                   '[A-Za-z0-9\.&_;+:?]+'))
     newurl = None
     for x in ind:
         if x.get_text() == 'Next page':
