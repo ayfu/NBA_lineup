@@ -18,6 +18,7 @@ import datetime as dt
 
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 
 nb_cols = ['PLUS_MINUS_opt', 'OFF_RATING_opt', 'DEF_RATING_opt', 'PACE_opt']

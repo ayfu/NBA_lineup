@@ -18,7 +18,7 @@ from collections import defaultdict
 
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder, LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder, MinMaxScaler, StandardScaler
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
@@ -371,7 +371,7 @@ class linModel():
         plt.fill_between(x1, y1, 0, color=(0.01,0.40,0.1), alpha = 0.25)
         plt.fill_between(x2, y2, 0, color=(0.01,0.40,0.1), alpha = 0.25)
 
-        # Plot results 
+        # Plot results
         ax.scatter(self.y_test, self.y_pred, color = color,
                    label = 'Data', s = 100, alpha = 0.1)
         #ax.plot(x,pred_y, label = 'Fit', lw = 5)
